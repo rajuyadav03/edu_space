@@ -77,7 +77,7 @@ export default function Home() {
                       placeholder="Select date"
                       value={searchParams.date}
                       onChange={(e) => setSearchParams({...searchParams, date: e.target.value})}
-                      className="border-0 p-0 focus:ring-0 text-gray-900 font-medium placeholder-gray-400 w-full"
+                      className="border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium placeholder-gray-400 dark:placeholder-gray-500 w-full"
                     />
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export default function Home() {
                     <select 
                       value={searchParams.spaceType}
                       onChange={(e) => setSearchParams({...searchParams, spaceType: e.target.value})}
-                      className="border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium w-full"
+                      className="border-0 p-0 focus:ring-0 text-gray-900 dark:text-white bg-transparent font-medium w-full [&>option]:bg-white [&>option]:text-gray-900"
                     >
                       <option value="">Any type</option>
                       <option value="Classroom">Classroom</option>
@@ -124,12 +124,12 @@ export default function Home() {
               <div className="text-gray-600 dark:text-gray-400">Verified Spaces</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-gray-900 mb-1">50+</div>
-              <div className="text-gray-600">Schools & Colleges</div>
+              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">50+</div>
+              <div className="text-gray-600 dark:text-gray-400">Schools & Colleges</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-gray-900 mb-1">1000+</div>
-              <div className="text-gray-600">Happy Customers</div>
+              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">1000+</div>
+              <div className="text-gray-600 dark:text-gray-400">Happy Customers</div>
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function Home() {
             </div>
             <Link 
               to="/listings" 
-              className="hidden md:flex items-center gap-2 text-gray-900 font-semibold hover:gap-3 transition-all"
+              className="hidden md:flex items-center gap-2 text-gray-900 dark:text-white font-semibold hover:gap-3 transition-all"
             >
               View all
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

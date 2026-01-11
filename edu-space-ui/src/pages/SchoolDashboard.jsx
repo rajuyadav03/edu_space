@@ -1,53 +1,91 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
+import AddSpaceModal from "../components/AddSpaceModal";
+import { listingsAPI, bookingsAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function SchoolDashboard() {
-  const mySpaces = [
-    {
-      id: 1,
-      name: "Science Lab",
-      type: "Laboratory",
-      capacity: 40,
-      price: 1500,
-      status: "Active",
-      bookings: 12,
-      revenue: 18000,
-      image: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=400"
-    },
-    {
-      id: 2,
-      name: "Main Auditorium",
-      type: "Auditorium",
-      capacity: 200,
-      price: 3500,
-      status: "Active",
-      bookings: 8,
-      revenue: 28000,
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?w=400"
-    }
-  ];
+  const navigate = useNavigate();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  
+  const [mySpaces, setMySpaces] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [actionLoading, setActionLoading] = useState(null);
+  const [isAddSpaceModalOpen, setIsAddSpaceModalOpen] = useState(false);
 
-  const pendingRequests = [
-    {
-      id: 1,
-      teacher: "Rajesh Kumar",
-      space: "Science Lab",
-      date: "Jan 25, 2026",
-      time: "Full Day",
-      price: 1500,
-      requestedOn: "Jan 10, 2026"
-    },
-    {
-      id: 2,
-      teacher: "Priya Sharma",
-      space: "Main Auditorium",
-      date: "Feb 5, 2026",
-      time: "Half Day",
-      price: 2000,
-      requestedOn: "Jan 12, 2026"
+  // Redirect if not authenticated or not a school
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || user?.role !== "school")) {
+      navigate("/login");
     }
-  ];
+  }, [isAuthenticated, authLoading, user, navigate]);
+
+  // Fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated || user?.role !== "school") return;
+      
+      try {
+        setLoading(true);
+        const [listingsRes, requestsRes] = await Promise.all([
+          listingsAPI.getMyListings(),
+          bookingsAPI.getRequests()
+        ]);
+        setMySpaces(listingsRes.data.listings || listingsRes.data || []);
+        setPendingRequests(requestsRes.data.bookings || requestsRes.data || []);
+        setError("");
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setError("Failed to load dashboard data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated && !authLoading) {
+      fetchData();
+    }
+  }, [isAuthenticated, authLoading, user]);
+
+  const handleBookingAction = async (bookingId, status) => {
+    try {
+      setActionLoading(bookingId);
+      await bookingsAPI.updateStatus(bookingId, status);
+      setPendingRequests(prev => prev.filter(r => (r._id || r.id) !== bookingId));
+    } catch (err) {
+      console.error(`Failed to ${status} booking:`, err);
+      alert(`Failed to ${status} booking. Please try again.`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Calculate stats
+  const stats = {
+    listedSpaces: mySpaces.length,
+    totalBookings: mySpaces.reduce((sum, s) => sum + (s.bookings || 0), 0),
+    pendingCount: pendingRequests.filter(r => r.status === 'pending' || r.status === 'Pending').length,
+    totalRevenue: mySpaces.reduce((sum, s) => sum + (s.revenue || 0), 0)
+  };
+
+  if (authLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-gray-50">
+          <svg className="animate-spin h-12 w-12 text-gray-900" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -71,7 +109,7 @@ export default function SchoolDashboard() {
                   </svg>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">6</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">{stats.listedSpaces}</div>
               <div className="text-sm text-gray-600">Listed Spaces</div>
             </div>
 
@@ -83,7 +121,7 @@ export default function SchoolDashboard() {
                   </svg>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">45</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">{stats.totalBookings}</div>
               <div className="text-sm text-gray-600">Total Bookings</div>
             </div>
 
@@ -95,7 +133,7 @@ export default function SchoolDashboard() {
                   </svg>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">3</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">{stats.pendingCount}</div>
               <div className="text-sm text-gray-600">Pending Requests</div>
             </div>
 
@@ -107,7 +145,7 @@ export default function SchoolDashboard() {
                   </svg>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">₹78,500</div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">₹{stats.totalRevenue.toLocaleString()}</div>
               <div className="text-sm text-gray-600">Total Revenue</div>
             </div>
           </div>
@@ -135,7 +173,10 @@ export default function SchoolDashboard() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Listed Spaces</h2>
-                <button className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition flex items-center gap-2">
+                <button 
+                  onClick={() => setIsAddSpaceModalOpen(true)}
+                  className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition flex items-center gap-2"
+                >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
@@ -204,60 +245,112 @@ export default function SchoolDashboard() {
             </div>
 
             <div className="p-6">
-              <div className="space-y-4">
-                {pendingRequests.map((request) => (
-                  <div key={request.id} className="bg-gray-50 rounded-2xl p-6 flex items-center justify-between hover:bg-gray-100 transition">
-                    <div className="flex-1">
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2].map((n) => (
+                    <div key={n} className="bg-gray-50 rounded-2xl p-6 animate-pulse">
                       <div className="flex items-center gap-4 mb-3">
-                        <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold">
-                          {request.teacher.charAt(0)}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900">{request.teacher}</h3>
-                          <p className="text-gray-600">Requested {request.space}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-6 text-gray-700">
-                        <div className="flex items-center gap-2">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span className="font-medium">{request.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="font-medium">{request.time}</span>
-                        </div>
-                        <div className="text-xl font-bold text-gray-900">
-                          ₹{request.price}
+                        <div className="w-12 h-12 bg-gray-200 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-5 bg-gray-200 rounded w-1/3" />
+                          <div className="h-4 bg-gray-200 rounded w-1/4" />
                         </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              ) : pendingRequests.filter(r => r.status === 'pending' || r.status === 'Pending').length === 0 ? (
+                <div className="text-center py-12">
+                  <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-xl text-gray-500">No pending requests</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingRequests.filter(r => r.status === 'pending' || r.status === 'Pending').map((request) => (
+                    <div key={request._id || request.id} className="bg-gray-50 rounded-2xl p-6 flex items-center justify-between hover:bg-gray-100 transition">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-3">
+                          <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold">
+                            {(request.teacher?.name || request.teacher || 'T').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">{request.teacher?.name || request.teacher}</h3>
+                            <p className="text-gray-600">Requested {request.listing?.name || request.space}</p>
+                          </div>
+                        </div>
 
-                    <div className="flex gap-3">
-                      <button className="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Approve
-                      </button>
-                      <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-red-300 hover:text-red-600 transition flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Decline
-                      </button>
+                        <div className="flex items-center gap-6 text-gray-700">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="font-medium">{new Date(request.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="font-medium">{request.duration === 'full' ? 'Full Day' : 'Half Day'}</span>
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            ₹{request.price || request.listing?.price || 0}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={() => handleBookingAction(request._id || request.id, 'confirmed')}
+                          disabled={actionLoading === (request._id || request.id)}
+                          className="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition flex items-center gap-2 disabled:opacity-50"
+                        >
+                          {actionLoading === (request._id || request.id) ? (
+                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => handleBookingAction(request._id || request.id, 'rejected')}
+                          disabled={actionLoading === (request._id || request.id)}
+                          className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-red-300 hover:text-red-600 transition flex items-center gap-2 disabled:opacity-50"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          Decline
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Add Space Modal */}
+      <AddSpaceModal 
+        isOpen={isAddSpaceModalOpen}
+        onClose={() => setIsAddSpaceModalOpen(false)}
+        onSuccess={async () => {
+          // Refresh listings after adding
+          try {
+            const res = await listingsAPI.getMyListings();
+            setMySpaces(res.data.listings || res.data || []);
+          } catch (err) {
+            console.error("Failed to refresh listings:", err);
+          }
+        }}
+      />
 
       <Footer />
     </>

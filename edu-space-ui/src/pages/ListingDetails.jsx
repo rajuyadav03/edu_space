@@ -1,21 +1,81 @@
- import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { listings } from "../data/listings";
+import BookingModal from "../components/BookingModal";
+import { listingsAPI } from "../services/api";
+import { listings as dummyListings } from "../data/listings";
 
 export default function ListingDetails() {
   const { id } = useParams();
-  const listing = listings.find((item) => item.id === parseInt(id));
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  // Try to fetch from backend first, fallback to dummy data
+  useEffect(() => {
+    const fetchListing = async () => {
+      try {
+        // Check if ID looks like a MongoDB ObjectId (24 hex chars)
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+        
+        if (isObjectId) {
+          const res = await listingsAPI.getOne(id);
+          if (res.data?.listing) {
+            // Format listing for component compatibility
+            const apiListing = res.data.listing;
+            setListing({
+              ...apiListing,
+              _id: apiListing._id,
+              lat: apiListing.coordinates?.lat || 19.076,
+              lng: apiListing.coordinates?.lng || 72.877,
+              image: apiListing.images?.[0] || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"
+            });
+            setLoading(false);
+            return;
+          }
+        }
+        
+        // Fallback to dummy data for numeric IDs
+        const dummyListing = dummyListings.find((item) => item.id === parseInt(id));
+        setListing(dummyListing || null);
+      } catch (err) {
+        // Fallback to dummy data on error
+        const dummyListing = dummyListings.find((item) => item.id === parseInt(id));
+        setListing(dummyListing || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchListing();
+  }, [id]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-gray-900">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-white mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   if (!listing) {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen flex items-center justify-center pt-20">
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-gray-900">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Listing Not Found</h1>
-            <Link to="/listings" className="text-gray-700 hover:text-gray-900 font-medium">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Listing Not Found</h1>
+            <Link to="/listings" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium">
               ← Back to Listings
             </Link>
           </div>
@@ -224,7 +284,10 @@ export default function ListingDetails() {
                   </div>
 
                   {/* CTA Buttons */}
-                  <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-md mb-3">
+                  <button 
+                    onClick={() => setIsBookingModalOpen(true)}
+                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-md mb-3"
+                  >
                     Request Booking
                   </button>
                   <button className="w-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
@@ -240,6 +303,13 @@ export default function ListingDetails() {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal 
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        listing={listing}
+      />
 
       <Footer />
     </>

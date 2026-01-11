@@ -1,9 +1,49 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
+  
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login submitted");
+    setError("");
+    setLoading(true);
+    
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        // Navigate based on user role
+        const userRole = result.user?.role || user?.role;
+        if (userRole === "school") {
+          navigate("/school-dashboard");
+        } else {
+          navigate("/teacher-dashboard");
+        }
+      } else {
+        setError(result.message || "Login failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,39 +76,52 @@ export default function Login() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-gray-900">EduSpace</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">EduSpace</span>
           </Link>
 
           {/* Header */}
           <div className="mb-10">
-            <h2 className="text-4xl font-bold text-gray-900 mb-3">Sign In</h2>
-            <p className="text-lg text-gray-600">Access your account</p>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">Sign In</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Access your account</p>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 Email
               </label>
               <input
                 type="email"
                 id="email"
                 required
-                className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition text-gray-900"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 Password
               </label>
               <input
                 type="password"
                 id="password"
                 required
-                className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition text-gray-900"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                 placeholder="••••••••"
               />
             </div>
@@ -79,18 +132,29 @@ export default function Login() {
                   type="checkbox"
                   className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
                 />
-                <span className="ml-2 text-sm text-gray-700">Remember me</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Remember me</span>
               </label>
-              <Link to="#" className="text-sm text-gray-900 hover:underline font-medium">
+              <Link to="#" className="text-sm text-gray-900 dark:text-white hover:underline font-medium">
                 Forgot password?
               </Link>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition shadow-md"
+              disabled={loading}
+              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Sign In
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 
@@ -100,13 +164,13 @@ export default function Login() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+              <span className="px-4 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">Or continue with</span>
             </div>
           </div>
 
           {/* Social Login */}
           <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-2 px-4 py-3.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+            <button className="flex items-center justify-center gap-2 px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition font-medium text-gray-900 dark:text-white">
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -124,9 +188,9 @@ export default function Login() {
           </div>
 
           {/* Sign Up Link */}
-          <p className="text-center mt-8 text-gray-600">
+          <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
             Don't have an account?{" "}
-            <Link to="/register" className="text-gray-900 hover:underline font-semibold">
+            <Link to="/register" className="text-gray-900 dark:text-white hover:underline font-semibold">
               Sign up
             </Link>
           </p>

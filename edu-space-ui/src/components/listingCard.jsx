@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function ListingCard({ item, onHover }) {
   return (
     <Link 
-      to={`/listing/${item.id}`}
+      to={`/listing/${item._id || item.id}`}
       onMouseEnter={() => onHover?.(item)}
       onMouseLeave={() => onHover?.(null)}
       className="group block bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"

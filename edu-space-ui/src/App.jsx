@@ -6,10 +6,12 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import SchoolDashboard from "./pages/SchoolDashboard";
+import SplashCursor from "./components/SplashCursor";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <SplashCursor />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<Listings />} />

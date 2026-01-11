@@ -8,12 +8,14 @@ import {
 } from "framer-motion";
 import { cn } from "../../lib/utils";
 import { useTheme } from "../../context/ThemeContext";
-import { Sun, Moon } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { Sun, Moon, User, LogOut } from "lucide-react";
 
 export const FloatingNav = ({ navItems, className }) => {
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     if (typeof current === "number") {
@@ -30,6 +32,11 @@ export const FloatingNav = ({ navItems, className }) => {
       }
     }
   });
+
+  const getDashboardLink = () => {
+    if (user?.role === "school") return "/school-dashboard";
+    return "/teacher-dashboard";
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -79,17 +86,37 @@ export const FloatingNav = ({ navItems, className }) => {
           )}
         </button>
 
-        {/* Login Button */}
-        <Link 
-          to="/login"
-          className="border text-sm font-medium relative border-gray-200 dark:border-white/[0.2] text-gray-900 dark:text-white px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition ml-1"
-        >
-          <span>Login</span>
-          <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-gray-500 to-transparent h-px" />
-        </Link>
+        {/* Auth Section */}
+        {isAuthenticated ? (
+          <>
+            <Link 
+              to={getDashboardLink()}
+              className="border text-sm font-medium relative border-gray-200 dark:border-white/[0.2] text-gray-900 dark:text-white px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition ml-1 flex items-center gap-2"
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">{user?.name?.split(' ')[0] || 'Dashboard'}</span>
+            </Link>
+            <button 
+              onClick={logout}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
+              aria-label="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <Link 
+            to="/login"
+            className="border text-sm font-medium relative border-gray-200 dark:border-white/[0.2] text-gray-900 dark:text-white px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition ml-1"
+          >
+            <span>Login</span>
+            <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-gray-500 to-transparent h-px" />
+          </Link>
+        )}
       </motion.div>
     </AnimatePresence>
   );
 };
 
 export default FloatingNav;
+

@@ -1,63 +1,45 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+  return (
+    import.meta?.env?.VITE_API_URL ||
+    import.meta?.env?.VITE_BACKEND_URL ||
+    "http://localhost:5000/api"
+  );
+};
 
-// Create axios instance
-const api = axios.create({
-  baseURL: API_URL,
+const client = axios.create({
+  baseURL: getApiBaseUrl(),
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json"
   }
 });
 
-// Add token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+client.interceptors.request.use((config) => {
+  const token = localStorage.getItem("eduSpaceToken");
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-// Auth API
-export const authAPI = {
-  register: (data) => api.post('/auth/register', data),
-  login: (data) => api.post('/auth/login', data),
-  getMe: () => api.get('/auth/me')
-};
-
-// Listings API
 export const listingsAPI = {
-  getAll: (params) => api.get('/listings', { params }),
-  getOne: (id) => api.get(`/listings/${id}`),
-  create: (data) => api.post('/listings', data),
-  update: (id, data) => api.put(`/listings/${id}`, data),
-  delete: (id) => api.delete(`/listings/${id}`),
-  getMyListings: () => api.get('/listings/my-listings')
+  getAll: (params) => client.get("/listings", { params }),
+  getOne: (id) => client.get(`/listings/${id}`),
+  getMyListings: () => client.get("/listings/my-listings"),
+  create: (payload) => client.post("/listings", payload),
+  update: (id, payload) => client.put(`/listings/${id}`, payload),
+  remove: (id) => client.delete(`/listings/${id}`)
 };
 
-// Bookings API
 export const bookingsAPI = {
-  create: (data) => api.post('/bookings', data),
-  getMyBookings: () => api.get('/bookings/my-bookings'),
-  getRequests: () => api.get('/bookings/requests'),
-  getOne: (id) => api.get(`/bookings/${id}`),
-  updateStatus: (id, status) => api.put(`/bookings/${id}/status`, { status }),
-  cancel: (id) => api.put(`/bookings/${id}/cancel`)
+  create: (payload) => client.post("/bookings", payload),
+  getMyBookings: () => client.get("/bookings/my-bookings"),
+  getRequests: () => client.get("/bookings/requests"),
+  getOne: (id) => client.get(`/bookings/${id}`),
+  updateStatus: (id, status) => client.put(`/bookings/${id}/status`, { status }),
+  cancel: (id) => client.put(`/bookings/${id}/cancel`)
 };
 
-// Users API
-export const usersAPI = {
-  getProfile: () => api.get('/users/profile'),
-  updateProfile: (data) => api.put('/users/profile', data),
-  getFavorites: () => api.get('/users/favorites'),
-  addFavorite: (listingId) => api.post(`/users/favorites/${listingId}`),
-  removeFavorite: (listingId) => api.delete(`/users/favorites/${listingId}`)
-};
-
-export default api;
+export default client;

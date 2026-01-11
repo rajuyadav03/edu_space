@@ -1,12 +1,62 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { register } = useAuth();
+  
   const [userType, setUserType] = useState("teacher");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    instituteName: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registration submitted for:", userType);
+    setError("");
+    setLoading(true);
+    
+    try {
+      const userData = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        role: userType,
+        ...(userType === "school" && { schoolName: formData.instituteName })
+      };
+      
+      const result = await register(userData);
+      
+      if (result.success) {
+        // Navigate based on user role
+        if (userType === "school") {
+          navigate("/school-dashboard");
+        } else {
+          navigate("/teacher-dashboard");
+        }
+      } else {
+        setError(result.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,13 +89,13 @@ export default function Register() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-gray-900">EduSpace</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">EduSpace</span>
           </Link>
 
           {/* Header */}
           <div className="mb-10">
-            <h2 className="text-4xl font-bold text-gray-900 mb-3">Create Account</h2>
-            <p className="text-lg text-gray-600">Choose your account type to get started</p>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">Create Account</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Choose your account type to get started</p>
           </div>
 
           {/* User Type Selection */}
@@ -55,8 +105,8 @@ export default function Register() {
               onClick={() => setUserType("teacher")}
               className={`p-5 border-2 rounded-xl transition ${
                 userType === "teacher"
-                  ? "border-gray-900 bg-gray-50"
-                  : "border-gray-200 hover:border-gray-400"
+                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-gray-800"
+                  : "border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
               }`}
             >
               <div className="flex flex-col items-center">
@@ -67,8 +117,8 @@ export default function Register() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <span className="font-semibold text-gray-900">Teacher</span>
-                <span className="text-xs text-gray-500 mt-1">Book spaces</span>
+                <span className="font-semibold text-gray-900 dark:text-white">Teacher</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Book spaces</span>
               </div>
             </button>
 
@@ -77,8 +127,8 @@ export default function Register() {
               onClick={() => setUserType("school")}
               className={`p-5 border-2 rounded-xl transition ${
                 userType === "school"
-                  ? "border-gray-900 bg-gray-50"
-                  : "border-gray-200 hover:border-gray-400"
+                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-gray-800"
+                  : "border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
               }`}
             >
               <div className="flex flex-col items-center">
@@ -89,91 +139,116 @@ export default function Register() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
-                <span className="font-semibold text-gray-900">School</span>
-                <span className="text-xs text-gray-500 mt-1">List spaces</span>
+                <span className="font-semibold text-gray-900 dark:text-white">School</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">List spaces</span>
               </div>
             </button>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-semibold text-gray-900 mb-2">
+                <label htmlFor="firstName" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   First Name
                 </label>
                 <input
                   type="text"
                   id="firstName"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                   placeholder="John"
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-semibold text-gray-900 mb-2">
+                <label htmlFor="lastName" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   Last Name
                 </label>
                 <input
                   type="text"
                   id="lastName"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                   placeholder="Doe"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 Email
               </label>
               <input
                 type="email"
                 id="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 Phone
               </label>
               <input
                 type="tel"
                 id="phone"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                value={formData.phone}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                 placeholder="+91 98765 43210"
               />
             </div>
 
             {userType === "school" && (
               <div>
-                <label htmlFor="instituteName" className="block text-sm font-semibold text-gray-900 mb-2">
+                <label htmlFor="instituteName" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   School/College Name
                 </label>
                 <input
                   type="text"
                   id="instituteName"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                  value={formData.instituteName}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                   placeholder="ABC Public School"
                 />
               </div>
             )}
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 Password
               </label>
               <input
                 type="password"
                 id="password"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
                 placeholder="••••••••"
               />
             </div>
@@ -185,26 +260,37 @@ export default function Register() {
                 required
                 className="w-4 h-4 mt-1 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
               />
-              <label htmlFor="terms" className="ml-3 text-sm text-gray-600">
+              <label htmlFor="terms" className="ml-3 text-sm text-gray-600 dark:text-gray-400">
                 I agree to the{" "}
-                <Link to="#" className="text-gray-900 hover:underline font-medium">Terms</Link>
+                <Link to="#" className="text-gray-900 dark:text-white hover:underline font-medium">Terms</Link>
                 {" "}and{" "}
-                <Link to="#" className="text-gray-900 hover:underline font-medium">Privacy Policy</Link>
+                <Link to="#" className="text-gray-900 dark:text-white hover:underline font-medium">Privacy Policy</Link>
               </label>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition shadow-md"
+              disabled={loading}
+              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Create Account
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Creating Account...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </button>
           </form>
 
           {/* Sign In Link */}
-          <p className="text-center mt-8 text-gray-600">
+          <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <Link to="/login" className="text-gray-900 hover:underline font-semibold">
+            <Link to="/login" className="text-gray-900 dark:text-white hover:underline font-semibold">
               Sign in
             </Link>
           </p>

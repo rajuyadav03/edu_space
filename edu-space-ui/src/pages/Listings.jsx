@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/navbar";
 import ListingCard from "../components/listingCard";
 import MapView from "../components/MapView";
-import { listings } from "../data/listings";
+import { listingsAPI } from "../services/api";
 
 export default function Listings() {
   const [searchParams] = useSearchParams();
@@ -11,15 +11,60 @@ export default function Listings() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("default");
   const [priceRange, setPriceRange] = useState([0, 5000]);
-  const [filteredListings, setFilteredListings] = useState(listings);
+  const [allListings, setAllListings] = useState([]);
+  const [filteredListings, setFilteredListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch listings from backend on mount
   useEffect(() => {
-    let result = [...listings];
+    const fetchListings = async () => {
+      try {
+        setError(null);
+        console.log("Fetching listings from API...");
+        const res = await listingsAPI.getAll();
+        console.log("API Response:", res.data);
+        
+        if (res.data?.listings && res.data.listings.length > 0) {
+          // Format listings for component compatibility
+          const apiListings = res.data.listings.map(listing => ({
+            ...listing,
+            id: listing._id, // Use _id as id for compatibility
+            lat: listing.coordinates?.lat || 19.076,
+            lng: listing.coordinates?.lng || 72.877,
+            image: listing.images?.[0] || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"
+          }));
+          console.log("Formatted listings:", apiListings);
+          setAllListings(apiListings);
+          setFilteredListings(apiListings);
+        } else {
+          // No listings available
+          console.log("No listings returned from API");
+          setAllListings([]);
+          setFilteredListings([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch listings:", err);
+        setError("Failed to load listings. Please try again later.");
+        setAllListings([]);
+        setFilteredListings([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchListings();
+  }, []);
+
+  // Apply filters when data or filters change
+  useEffect(() => {
+    if (allListings.length === 0) return;
+    
+    let result = [...allListings];
 
     // Apply URL search params from home page
     const locationParam = searchParams.get('location');
     const typeParam = searchParams.get('type');
-    const dateParam = searchParams.get('date');
 
     if (locationParam) {
       result = result.filter(item => 
@@ -61,7 +106,7 @@ export default function Listings() {
     }
 
     setFilteredListings(result);
-  }, [activeFilter, sortBy, priceRange, searchParams]);
+  }, [allListings, activeFilter, sortBy, priceRange, searchParams]);
 
   const filters = ["All", "Classroom", "Laboratory", "Auditorium", "Sports Hall"];
 
@@ -136,7 +181,26 @@ export default function Listings() {
 
             {/* Listings Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {filteredListings.length > 0 ? (
+              {loading ? (
+                <div className="col-span-2 flex flex-col items-center justify-center py-16">
+                  <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mb-4"></div>
+                  <p className="text-lg text-gray-500 dark:text-gray-400">Loading spaces...</p>
+                </div>
+              ) : error ? (
+                <div className="col-span-2 text-center py-12">
+                  <svg className="w-16 h-16 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <p className="text-xl text-red-500 mb-2">{error}</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">Make sure the backend server is running.</p>
+                  <button 
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : filteredListings.length > 0 ? (
                 filteredListings.map((item) => (
                   <ListingCard 
                     key={item.id} 
@@ -149,7 +213,7 @@ export default function Listings() {
                   <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-xl text-gray-500">No spaces found matching your criteria</p>
+                  <p className="text-xl text-gray-500 dark:text-gray-400">No spaces found matching your criteria</p>
                   <button 
                     onClick={() => {
                       setActiveFilter("All");
