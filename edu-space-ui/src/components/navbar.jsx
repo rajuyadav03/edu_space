@@ -61,8 +61,11 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <button 
+              type="button"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition"
+              className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />

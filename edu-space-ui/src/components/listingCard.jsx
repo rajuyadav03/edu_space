@@ -16,7 +16,16 @@ export default function ListingCard({ item, onHover }) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {/* Favorite Button */}
-        <button className="absolute top-4 right-4 w-10 h-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-gray-800 transition shadow-lg">
+        <button 
+          type="button"
+          aria-label={`Add ${item.name} to favorites`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // TODO: Add to favorites functionality
+          }}
+          className="absolute top-4 right-4 w-10 h-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-gray-800 transition shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+        >
           <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>

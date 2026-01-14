@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import SchoolDashboard from "./pages/SchoolDashboard";
+import NotFound from "./pages/NotFound";
 import SplashCursor from "./components/SplashCursor";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/school-dashboard" element={<SchoolDashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

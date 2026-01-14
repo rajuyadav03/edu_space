@@ -60,7 +60,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-white dark:bg-gray-900">
       {/* Left Side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img 
@@ -80,7 +80,7 @@ export default function Register() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto bg-white dark:bg-gray-900">
         <div className="w-full max-w-md py-8">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-12">
@@ -111,9 +111,9 @@ export default function Register() {
             >
               <div className="flex flex-col items-center">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                  userType === "teacher" ? "bg-gray-900" : "bg-gray-100"
+                  userType === "teacher" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-gray-700"
                 }`}>
-                  <svg className={`w-6 h-6 ${userType === "teacher" ? "text-white" : "text-gray-700"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-6 h-6 ${userType === "teacher" ? "text-white dark:text-gray-900" : "text-gray-700 dark:text-gray-300"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
@@ -133,9 +133,9 @@ export default function Register() {
             >
               <div className="flex flex-col items-center">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                  userType === "school" ? "bg-gray-900" : "bg-gray-100"
+                  userType === "school" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-gray-700"
                 }`}>
-                  <svg className={`w-6 h-6 ${userType === "school" ? "text-white" : "text-gray-700"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-6 h-6 ${userType === "school" ? "text-white dark:text-gray-900" : "text-gray-700 dark:text-gray-300"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "../lib/constants";
 
 // Component to handle map centering when listing is hovered
 function MapController({ hoveredListing }) {
@@ -21,8 +22,8 @@ export default function MapView({ listings, hoveredListing }) {
 
   return (
     <MapContainer
-      center={[19.076, 72.8777]}
-      zoom={11}
+      center={[DEFAULT_MAP_CENTER.lat, DEFAULT_MAP_CENTER.lng]}
+      zoom={DEFAULT_MAP_ZOOM}
       className="h-full w-full"
       ref={mapRef}
     >
@@ -35,7 +36,7 @@ export default function MapView({ listings, hoveredListing }) {
 
       {listings.map((item) => (
         <Marker 
-          key={item.id} 
+          key={item._id || item.id} 
           position={[item.lat, item.lng]}
         >
           <Popup>

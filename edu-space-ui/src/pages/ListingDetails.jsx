@@ -189,21 +189,23 @@ export default function ListingDetails() {
               </div>
 
               {/* Amenities */}
-              <div className="mb-10">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What's Included</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {listing.amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                      <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+              {listing.amenities?.length > 0 && (
+                <div className="mb-10">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What's Included</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {listing.amenities.map((amenity, index) => (
+                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white">{amenity}</span>
                       </div>
-                      <span className="font-medium text-gray-900 dark:text-white">{amenity}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Location Map */}
               <div>
@@ -251,6 +253,7 @@ export default function ListingDetails() {
                       </label>
                       <input 
                         type="date" 
+                        min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
                       />
                     </div>
@@ -290,7 +293,13 @@ export default function ListingDetails() {
                   >
                     Request Booking
                   </button>
-                  <button className="w-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                  <button 
+                    onClick={() => {
+                      // TODO: Replace with proper contact modal when backend supports it
+                      window.open(`mailto:info@eduspace.in?subject=Inquiry about ${listing.name}&body=Hi, I am interested in booking this space.`);
+                    }}
+                    className="w-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
                     Contact Owner
                   </button>
 

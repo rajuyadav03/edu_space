@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/navbar";
 import ListingCard from "../components/listingCard";
 import MapView from "../components/MapView";
+import ErrorBoundary from "../components/ErrorBoundary";
+import { ListingGridSkeleton } from "../components/Skeleton";
 import { listingsAPI } from "../services/api";
+import { DEFAULT_MAP_CENTER, PRICE_RANGE, SPACE_TYPES } from "../lib/constants";
 
 export default function Listings() {
   const [searchParams] = useSearchParams();
   const [hoveredListing, setHoveredListing] = useState(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("default");
-  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [priceRange, setPriceRange] = useState([PRICE_RANGE.min, PRICE_RANGE.max]);
   const [allListings, setAllListings] = useState([]);
-  const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,33 +23,26 @@ export default function Listings() {
     const fetchListings = async () => {
       try {
         setError(null);
-        console.log("Fetching listings from API...");
         const res = await listingsAPI.getAll();
-        console.log("API Response:", res.data);
         
         if (res.data?.listings && res.data.listings.length > 0) {
           // Format listings for component compatibility
           const apiListings = res.data.listings.map(listing => ({
             ...listing,
             id: listing._id, // Use _id as id for compatibility
-            lat: listing.coordinates?.lat || 19.076,
-            lng: listing.coordinates?.lng || 72.877,
+            lat: listing.coordinates?.lat || DEFAULT_MAP_CENTER.lat,
+            lng: listing.coordinates?.lng || DEFAULT_MAP_CENTER.lng,
             image: listing.images?.[0] || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"
           }));
-          console.log("Formatted listings:", apiListings);
           setAllListings(apiListings);
-          setFilteredListings(apiListings);
         } else {
           // No listings available
-          console.log("No listings returned from API");
           setAllListings([]);
-          setFilteredListings([]);
         }
       } catch (err) {
         console.error("Failed to fetch listings:", err);
         setError("Failed to load listings. Please try again later.");
         setAllListings([]);
-        setFilteredListings([]);
       } finally {
         setLoading(false);
       }
@@ -56,9 +51,9 @@ export default function Listings() {
     fetchListings();
   }, []);
 
-  // Apply filters when data or filters change
-  useEffect(() => {
-    if (allListings.length === 0) return;
+  // Memoized filtering - recomputes only when dependencies change
+  const filteredListings = useMemo(() => {
+    if (allListings.length === 0) return [];
     
     let result = [...allListings];
 
@@ -68,17 +63,16 @@ export default function Listings() {
 
     if (locationParam) {
       result = result.filter(item => 
-        item.location.toLowerCase().includes(locationParam.toLowerCase())
+        item.location?.toLowerCase().includes(locationParam.toLowerCase())
       );
     }
 
     if (typeParam) {
       result = result.filter(item => item.spaceType === typeParam);
-      setActiveFilter(typeParam);
     }
 
-    // Apply active filter
-    if (activeFilter !== "All") {
+    // Apply active filter (skip if URL has type param to avoid double filtering)
+    if (activeFilter !== "All" && !typeParam) {
       result = result.filter(item => item.spaceType === activeFilter);
     }
 
@@ -105,10 +99,10 @@ export default function Listings() {
         break;
     }
 
-    setFilteredListings(result);
+    return result;
   }, [allListings, activeFilter, sortBy, priceRange, searchParams]);
 
-  const filters = ["All", "Classroom", "Laboratory", "Auditorium", "Sports Hall"];
+  const filters = SPACE_TYPES;
 
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -147,7 +141,10 @@ export default function Listings() {
                 <input 
                   type="number" 
                   value={priceRange[0]}
-                  onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                  onChange={(e) => {
+                    const newMin = parseInt(e.target.value) || 0;
+                    setPriceRange([newMin, Math.max(newMin, priceRange[1])]);
+                  }}
                   className="w-20 border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium"
                   min="0"
                 />
@@ -155,8 +152,11 @@ export default function Listings() {
                 <input 
                   type="number" 
                   value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                  className="w-20 border-0 p-0 focus:ring-0 text-gray-900 font-medium"
+                  onChange={(e) => {
+                    const newMax = parseInt(e.target.value) || 0;
+                    setPriceRange([Math.min(priceRange[0], newMax), newMax]);
+                  }}
+                  className="w-20 border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium"
                   min="0"
                 />
               </div>
@@ -170,8 +170,8 @@ export default function Listings() {
                   onClick={() => setActiveFilter(filter)}
                   className={`px-5 py-2.5 rounded-xl font-medium transition whitespace-nowrap ${
                     activeFilter === filter
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-900'
+                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-gray-400'
                   }`}
                 >
                   {filter === "All" ? "All Spaces" : filter}
@@ -182,10 +182,7 @@ export default function Listings() {
             {/* Listings Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {loading ? (
-                <div className="col-span-2 flex flex-col items-center justify-center py-16">
-                  <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mb-4"></div>
-                  <p className="text-lg text-gray-500 dark:text-gray-400">Loading spaces...</p>
-                </div>
+                <ListingGridSkeleton count={4} />
               ) : error ? (
                 <div className="col-span-2 text-center py-12">
                   <svg className="w-16 h-16 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,10 +229,15 @@ export default function Listings() {
 
         {/* RIGHT SIDE - MAP */}
         <div className="hidden lg:block lg:w-1/2 sticky top-20 h-[calc(100vh-5rem)]">
-          <MapView 
-            listings={filteredListings}
-            hoveredListing={hoveredListing}
-          />
+          <ErrorBoundary
+            fallbackTitle="Map unavailable"
+            fallbackMessage="The map couldn't load. Please refresh the page."
+          >
+            <MapView 
+              listings={filteredListings}
+              hoveredListing={hoveredListing}
+            />
+          </ErrorBoundary>
         </div>
       </div>
     </div>

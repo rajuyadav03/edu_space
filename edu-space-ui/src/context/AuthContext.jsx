@@ -1,21 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../lib/constants";
 
 const AuthContext = createContext(null);
 
 const STORAGE_TOKEN_KEY = "eduSpaceToken";
 const STORAGE_USER_KEY = "eduSpaceUser";
 
-const getApiBaseUrl = () => {
-  return (
-    import.meta?.env?.VITE_API_URL ||
-    import.meta?.env?.VITE_BACKEND_URL ||
-    "http://localhost:5000/api"
-  );
-};
-
 const authClient = axios.create({
-  baseURL: getApiBaseUrl(),
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json"
   }
@@ -143,6 +136,8 @@ export const AuthProvider = ({ children }) => {
     persistAuth(null, null);
   };
 
+  // Functions are stable and don't need to be in deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const value = useMemo(
     () => ({
       user,
