@@ -269,16 +269,53 @@ export default function SchoolDashboard() {
                       </div>
 
                       <div className="flex gap-3">
-                        <button type="button" className="flex-1 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition">
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            // TODO: Implement edit modal
+                            alert('Edit functionality coming soon! For now, please delete and recreate the listing.');
+                          }}
+                          className="flex-1 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition"
+                        >
                           Edit
                         </button>
-                        <button type="button" className="flex-1 px-4 py-2 border-2 border-gray-900 dark:border-gray-300 text-gray-900 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        <button 
+                          type="button" 
+                          onClick={() => navigate(`/listings/${space._id || space.id}`)}
+                          className="flex-1 px-4 py-2 border-2 border-gray-900 dark:border-gray-300 text-gray-900 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                        >
                           View
                         </button>
-                        <button type="button" className="px-4 py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-xl hover:border-red-300 hover:text-red-600 dark:hover:border-red-500 dark:hover:text-red-400 transition">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
+                        <button 
+                          type="button" 
+                          onClick={async () => {
+                            if (window.confirm(`Are you sure you want to delete "${space.name}"? This action cannot be undone.`)) {
+                              try {
+                                setActionLoading(space._id || space.id);
+                                await listingsAPI.remove(space._id || space.id);
+                                setMySpaces(prev => prev.filter(s => (s._id || s.id) !== (space._id || space.id)));
+                              } catch (err) {
+                                console.error('Failed to delete listing:', err);
+                                setActionError('Failed to delete listing. Please try again.');
+                                setTimeout(() => setActionError(''), 5000);
+                              } finally {
+                                setActionLoading(null);
+                              }
+                            }
+                          }}
+                          disabled={actionLoading === (space._id || space.id)}
+                          className="px-4 py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-xl hover:border-red-300 hover:text-red-600 dark:hover:border-red-500 dark:hover:text-red-400 transition disabled:opacity-50"
+                        >
+                          {actionLoading === (space._id || space.id) ? (
+                            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          )}
                         </button>
                       </div>
                     </div>
