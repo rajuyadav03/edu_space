@@ -34,17 +34,17 @@ export default function MapView({ listings, hoveredListing }) {
 
       <MapController hoveredListing={hoveredListing} />
 
-      {listings.map((item) => (
-        <Marker 
-          key={item._id || item.id} 
-          position={[item.lat, item.lng]}
+      {(listings || []).map((item) => (
+        <Marker
+          key={item._id || item.id}
+          position={[item.lat || DEFAULT_MAP_CENTER.lat, item.lng || DEFAULT_MAP_CENTER.lng]}
         >
           <Popup>
             <div className="text-center">
-              <strong className="block mb-1">{item.name}</strong>
-              <span className="text-sm text-gray-600">{item.location}</span>
+              <strong className="block mb-1">{item.name || 'Unnamed Space'}</strong>
+              <span className="text-sm text-gray-600">{item.location || 'Location unavailable'}</span>
               <div className="mt-2 font-semibold text-indigo-600">
-                ₹{item.price}/day
+                ₹{item.price || 0}/day
               </div>
             </div>
           </Popup>

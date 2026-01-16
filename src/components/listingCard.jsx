@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function ListingCard({ item, onHover }) {
   return (
-    <Link 
+    <Link
       to={`/listing/${item._id || item.id}`}
       onMouseEnter={() => onHover?.(item)}
       onMouseLeave={() => onHover?.(null)}
@@ -11,16 +11,17 @@ export default function ListingCard({ item, onHover }) {
       {/* Image Container */}
       <div className="relative overflow-hidden aspect-[4/3]">
         <img
-          src={item.image}
-          alt={item.name}
+          src={item.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+          alt={item.name || "Space"}
           className="w-full h-full object-cover image-zoom"
+          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         {/* Favorite Button - Glassmorphism */}
-        <button 
+        <button
           type="button"
           aria-label={`Add ${item.name} to favorites`}
           onClick={(e) => {
@@ -34,7 +35,7 @@ export default function ListingCard({ item, onHover }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </button>
-        
+
         {/* Space Type Badge */}
         <div className="absolute bottom-4 left-4 px-3 py-1.5 glass rounded-full text-xs font-semibold text-gray-800 dark:text-gray-200">
           {item.spaceType}
@@ -73,7 +74,7 @@ export default function ListingCard({ item, onHover }) {
             <span className="text-2xl font-bold text-gray-900 dark:text-white">₹{item.price}</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">/day</span>
           </div>
-          
+
           {/* Animated Arrow Button */}
           <div className="btn-premium-arrow w-11 h-11 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 transition-colors duration-300">
             <svg className="w-5 h-5 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">

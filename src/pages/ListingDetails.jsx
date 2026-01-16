@@ -19,7 +19,7 @@ export default function ListingDetails() {
       try {
         // Check if ID looks like a MongoDB ObjectId (24 hex chars)
         const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
-        
+
         if (isObjectId) {
           const res = await listingsAPI.getOne(id);
           if (res.data?.listing) {
@@ -36,7 +36,7 @@ export default function ListingDetails() {
             return;
           }
         }
-        
+
         // Fallback to dummy data for numeric IDs
         const dummyListing = dummyListings.find((item) => item.id === parseInt(id));
         setListing(dummyListing || null);
@@ -48,7 +48,7 @@ export default function ListingDetails() {
         setLoading(false);
       }
     };
-    
+
     fetchListing();
   }, [id]);
 
@@ -92,8 +92,8 @@ export default function ListingDetails() {
       <div className="pt-20 bg-white dark:bg-gray-900 min-h-screen">
         {/* Back Button */}
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
-          <Link 
-            to="/listings" 
+          <Link
+            to="/listings"
             className="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,18 +108,19 @@ export default function ListingDetails() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Main Image */}
             <div className="lg:row-span-2 rounded-2xl overflow-hidden h-[400px] lg:h-[600px]">
-              <img 
-                src={listing.image} 
-                alt={listing.name}
+              <img
+                src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+                alt={listing.name || "Space"}
                 className="w-full h-full object-cover"
+                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
               />
             </div>
             {/* Gallery Images */}
             <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200">
-              <img src={listing.image} alt="Gallery" className="w-full h-full object-cover opacity-80" />
+              <img src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"} alt="Gallery" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }} />
             </div>
             <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200">
-              <img src={listing.image} alt="Gallery" className="w-full h-full object-cover opacity-80" />
+              <img src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"} alt="Gallery" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }} />
             </div>
           </div>
         </div>
@@ -251,8 +252,8 @@ export default function ListingDetails() {
                       <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
                         Check-in Date
                       </label>
-                      <input 
-                        type="date" 
+                      <input
+                        type="date"
                         min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
                       />
@@ -287,13 +288,13 @@ export default function ListingDetails() {
                   </div>
 
                   {/* CTA Buttons */}
-                  <button 
+                  <button
                     onClick={() => setIsBookingModalOpen(true)}
                     className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-md mb-3"
                   >
                     Request Booking
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       // TODO: Replace with proper contact modal when backend supports it
                       window.open(`mailto:info@eduspace.in?subject=Inquiry about ${listing.name}&body=Hi, I am interested in booking this space.`);
@@ -314,7 +315,7 @@ export default function ListingDetails() {
       </div>
 
       {/* Booking Modal */}
-      <BookingModal 
+      <BookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
         listing={listing}

@@ -75,10 +75,10 @@ export default function BookingModal({ isOpen, onClose, listing }) {
 
     try {
       // Map frontend fields to backend expected fields
-      const timeSlot = formData.duration === "full" 
-        ? "Full Day" 
+      const timeSlot = formData.duration === "full"
+        ? "Full Day"
         : "Half Day (Morning)";
-      
+
       const payload = {
         listingId: listing?.id || listing?._id,
         bookingDate: formData.date,
@@ -105,11 +105,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
         {/* Backdrop */}
-        <div 
+        <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         />
-        
+
         {/* Modal */}
         <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-200">
           {/* Close Button */}
@@ -156,11 +156,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
   if (user?.role === "school") {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-        <div 
+        <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         />
-        
+
         <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
           <button
             onClick={onClose}
@@ -197,11 +197,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
   if (success) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-        <div 
+        <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         />
-        
+
         <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
           <div className="text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -213,11 +213,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
             <p className="text-gray-600 dark:text-gray-400 mb-8">
               Your booking request has been sent to the space owner. You'll receive a notification once they respond.
             </p>
-            
+
             <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4 mb-6 text-left">
               <div className="flex items-center gap-4 mb-3">
-                <img 
-                  src={listing?.image} 
+                <img
+                  src={listing?.image}
                   alt={listing?.name}
                   className="w-16 h-16 rounded-xl object-cover"
                 />
@@ -268,11 +268,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
@@ -291,10 +291,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
         {/* Listing Info */}
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4">
-            <img 
-              src={listing?.image} 
-              alt={listing?.name}
+            <img
+              src={listing?.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+              alt={listing?.name || "Space"}
               className="w-20 h-20 rounded-xl object-cover"
+              onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
             />
             <div className="flex-1">
               <h3 className="font-bold text-gray-900 dark:text-white mb-1">{listing?.name}</h3>
@@ -350,11 +351,10 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                   type="button"
                   onClick={() => setFormData({ ...formData, duration: "half" })}
                   disabled={loading}
-                  className={`p-4 border-2 rounded-xl transition text-left ${
-                    formData.duration === "half"
+                  className={`p-4 border-2 rounded-xl transition text-left ${formData.duration === "half"
                       ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
                       : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
-                  }`}
+                    }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-white">Half Day</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">4 hours</div>
@@ -366,11 +366,10 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                   type="button"
                   onClick={() => setFormData({ ...formData, duration: "full" })}
                   disabled={loading}
-                  className={`p-4 border-2 rounded-xl transition text-left ${
-                    formData.duration === "full"
+                  className={`p-4 border-2 rounded-xl transition text-left ${formData.duration === "full"
                       ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
                       : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
-                  }`}
+                    }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-white">Full Day</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">8 hours</div>
