@@ -266,7 +266,7 @@ export default function TeacherDashboard() {
                               ? 'bg-red-100 text-red-700'
                               : 'bg-yellow-100 text-yellow-700'
                           }`}>
-                            {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1)}
+                            {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown'}
                           </span>
                         </div>
 

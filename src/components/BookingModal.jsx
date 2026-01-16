@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { bookingsAPI } from "../services/api";
 
 export default function BookingModal({ isOpen, onClose, listing }) {
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -358,7 +359,7 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                   <div className="font-semibold text-gray-900 dark:text-white">Half Day</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">4 hours</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                    ₹{Math.round(listing?.price * 0.6)}
+                    ₹{Math.round((listing?.price || 0) * 0.6)}
                   </div>
                 </button>
                 <button

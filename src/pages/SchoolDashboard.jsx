@@ -281,7 +281,7 @@ export default function SchoolDashboard() {
                         </button>
                         <button 
                           type="button" 
-                          onClick={() => navigate(`/listings/${space._id || space.id}`)}
+                          onClick={() => navigate(`/listing/${space._id || space.id}`)}
                           className="flex-1 px-4 py-2 border-2 border-gray-900 dark:border-gray-300 text-gray-900 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                         >
                           View
