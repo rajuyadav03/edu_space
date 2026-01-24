@@ -57,7 +57,7 @@ export default function ListingDetails() {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-gray-900">
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-neutral-950">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-white mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">Loading...</p>
@@ -72,7 +72,7 @@ export default function ListingDetails() {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-gray-900">
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-white dark:bg-neutral-950">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Listing Not Found</h1>
             <Link to="/listings" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium">
@@ -89,7 +89,7 @@ export default function ListingDetails() {
     <>
       <Navbar />
 
-      <div className="pt-20 bg-white dark:bg-gray-900 min-h-screen">
+      <div className="pt-20 bg-white dark:bg-neutral-950 min-h-screen">
         {/* Back Button */}
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
           <Link
@@ -144,7 +144,7 @@ export default function ListingDetails() {
                 {/* Quick Info */}
                 <div className="flex flex-wrap gap-6 pb-8 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-neutral-900 rounded-xl flex items-center justify-center">
                       <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
@@ -156,7 +156,7 @@ export default function ListingDetails() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-neutral-900 rounded-xl flex items-center justify-center">
                       <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
@@ -168,7 +168,7 @@ export default function ListingDetails() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-neutral-900 rounded-xl flex items-center justify-center">
                       <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -195,8 +195,8 @@ export default function ListingDetails() {
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What's Included</h2>
                   <div className="grid grid-cols-2 gap-4">
                     {listing.amenities.map((amenity, index) => (
-                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                        <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-neutral-900 rounded-xl">
+                        <div className="w-10 h-10 bg-white dark:bg-neutral-800 rounded-lg flex items-center justify-center flex-shrink-0">
                           <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
@@ -211,7 +211,7 @@ export default function ListingDetails() {
               {/* Location Map */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Location</h2>
-                <div className="h-96 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                <div className="h-96 rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-800">
                   <MapContainer
                     center={[listing.lat, listing.lng]}
                     zoom={15}
@@ -236,9 +236,9 @@ export default function ListingDetails() {
             {/* Booking Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg">
+                <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl p-6 shadow-lg">
                   {/* Price */}
-                  <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="mb-6 pb-6 border-b border-gray-200 dark:border-neutral-800">
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="text-4xl font-bold text-gray-900 dark:text-white">₹{listing.price}</span>
                       <span className="text-lg text-gray-500 dark:text-gray-400">/day</span>
@@ -255,14 +255,14 @@ export default function ListingDetails() {
                       <input
                         type="date"
                         min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
                         Duration
                       </label>
-                      <select className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition">
+                      <select className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition">
                         <option>Half Day (4 hours)</option>
                         <option>Full Day (8 hours)</option>
                         <option>Multiple Days</option>
@@ -271,7 +271,7 @@ export default function ListingDetails() {
                   </div>
 
                   {/* Pricing Breakdown */}
-                  <div className="space-y-3 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="space-y-3 mb-6 pb-6 border-b border-gray-200 dark:border-neutral-800">
                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                       <span>₹{listing.price} × 1 day</span>
                       <span>₹{listing.price}</span>
@@ -299,7 +299,7 @@ export default function ListingDetails() {
                       // TODO: Replace with proper contact modal when backend supports it
                       window.open(`mailto:info@eduspace.in?subject=Inquiry about ${listing.name}&body=Hi, I am interested in booking this space.`);
                     }}
-                    className="w-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    className="w-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-neutral-800 transition"
                   >
                     Contact Owner
                   </button>

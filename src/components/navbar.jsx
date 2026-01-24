@@ -38,18 +38,25 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Nav */}
-      <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+      <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md border-b border-gray-100 dark:border-neutral-800">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white">
-            EduSpace
+          {/* Logo with Premium Gradient */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-cyan-500/40 transition-shadow duration-300">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 dark:from-blue-400 dark:via-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+              EduSpace
+            </span>
           </Link>
 
           <div className="flex items-center gap-2">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-900 transition"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? (
@@ -60,12 +67,12 @@ export default function Navbar() {
             </button>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               type="button"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+              className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -77,36 +84,34 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div 
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            mobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
-          }`}
+        <div
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${mobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+            }`}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-gray-100 dark:border-neutral-800 overflow-hidden">
             <div className="flex flex-col">
               {navItems.map((item, idx) => (
-                <Link 
+                <Link
                   key={idx}
-                  to={item.link} 
+                  to={item.link}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-4 font-medium flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 transition ${
-                    item.active 
-                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' 
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
+                  className={`px-6 py-4 font-medium flex items-center gap-3 border-b border-gray-100 dark:border-neutral-800 transition ${item.active
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                    }`}
                 >
                   {item.icon}
                   {item.name}
                 </Link>
               ))}
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-6 py-4 font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition border-b border-gray-100 dark:border-gray-700"
+                className="px-6 py-4 font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition border-b border-gray-100 dark:border-neutral-800"
               >
                 Login
               </Link>
-              <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-900">
+              <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-neutral-950">
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                   <Phone className="w-4 h-4" />
                   <a href="tel:+919876543210" className="text-sm font-medium">

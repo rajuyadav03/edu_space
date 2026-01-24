@@ -24,7 +24,7 @@ export default function Listings() {
       try {
         setError(null);
         const res = await listingsAPI.getAll();
-        
+
         if (res.data?.listings && res.data.listings.length > 0) {
           // Format listings for component compatibility
           const apiListings = res.data.listings.map(listing => ({
@@ -47,14 +47,14 @@ export default function Listings() {
         setLoading(false);
       }
     };
-    
+
     fetchListings();
   }, []);
 
   // Memoized filtering - recomputes only when dependencies change
   const filteredListings = useMemo(() => {
     if (allListings.length === 0) return [];
-    
+
     let result = [...allListings];
 
     // Apply URL search params from home page
@@ -62,7 +62,7 @@ export default function Listings() {
     const typeParam = searchParams.get('type');
 
     if (locationParam) {
-      result = result.filter(item => 
+      result = result.filter(item =>
         item.location?.toLowerCase().includes(locationParam.toLowerCase())
       );
     }
@@ -77,12 +77,12 @@ export default function Listings() {
     }
 
     // Apply price range
-    result = result.filter(item => 
+    result = result.filter(item =>
       item.price >= priceRange[0] && item.price <= priceRange[1]
     );
 
     // Apply sorting
-    switch(sortBy) {
+    switch (sortBy) {
       case "price-low":
         result.sort((a, b) => a.price - b.price);
         break;
@@ -105,12 +105,12 @@ export default function Listings() {
   const filters = SPACE_TYPES;
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-gray-900">
+    <div className="h-screen flex flex-col bg-white dark:bg-neutral-950">
       <Navbar />
 
       <div className="flex-1 flex pt-20">
         {/* LEFT SIDE - LISTINGS */}
-        <div className="w-full lg:w-1/2 overflow-y-auto bg-white dark:bg-gray-900">
+        <div className="w-full lg:w-1/2 overflow-y-auto bg-white dark:bg-neutral-950">
           <div className="p-8">
             {/* Header */}
             <div className="mb-8">
@@ -124,10 +124,10 @@ export default function Listings() {
 
             {/* Sort & Price Range */}
             <div className="flex flex-wrap gap-4 mb-6">
-              <select 
+              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:border-gray-900 dark:hover:border-gray-500 transition"
+                className="px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:border-gray-900 dark:hover:border-neutral-600 transition"
               >
                 <option value="default">Sort by: Default</option>
                 <option value="price-low">Price: Low to High</option>
@@ -136,10 +136,10 @@ export default function Listings() {
                 <option value="capacity-high">Capacity: High to Low</option>
               </select>
 
-              <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
+              <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Price Range:</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={priceRange[0]}
                   onChange={(e) => {
                     const newMin = parseInt(e.target.value) || 0;
@@ -149,8 +149,8 @@ export default function Listings() {
                   min="0"
                 />
                 <span className="text-gray-400">-</span>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={priceRange[1]}
                   onChange={(e) => {
                     const newMax = parseInt(e.target.value) || 0;
@@ -168,11 +168,10 @@ export default function Listings() {
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`px-5 py-2.5 rounded-xl font-medium transition whitespace-nowrap ${
-                    activeFilter === filter
+                  className={`px-5 py-2.5 rounded-xl font-medium transition whitespace-nowrap ${activeFilter === filter
                       ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-gray-400'
-                  }`}
+                      : 'bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-neutral-500'
+                    }`}
                 >
                   {filter === "All" ? "All Spaces" : filter}
                 </button>
@@ -190,7 +189,7 @@ export default function Listings() {
                   </svg>
                   <p className="text-xl text-red-500 mb-2">{error}</p>
                   <p className="text-gray-500 dark:text-gray-400 mb-4">Make sure the backend server is running.</p>
-                  <button 
+                  <button
                     onClick={() => window.location.reload()}
                     className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition"
                   >
@@ -199,8 +198,8 @@ export default function Listings() {
                 </div>
               ) : filteredListings.length > 0 ? (
                 filteredListings.map((item) => (
-                  <ListingCard 
-                    key={item.id} 
+                  <ListingCard
+                    key={item.id}
                     item={item}
                     onHover={setHoveredListing}
                   />
@@ -211,7 +210,7 @@ export default function Listings() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <p className="text-xl text-gray-500 dark:text-gray-400">No spaces found matching your criteria</p>
-                  <button 
+                  <button
                     onClick={() => {
                       setActiveFilter("All");
                       setPriceRange([0, 5000]);
@@ -233,7 +232,7 @@ export default function Listings() {
             fallbackTitle="Map unavailable"
             fallbackMessage="The map couldn't load. Please refresh the page."
           >
-            <MapView 
+            <MapView
               listings={filteredListings}
               hoveredListing={hoveredListing}
             />

@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
-  
+
   const [userType, setUserType] = useState("teacher");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -29,7 +29,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     try {
       const userData = {
         name: `${formData.firstName} ${formData.lastName}`,
@@ -39,9 +39,9 @@ export default function Register() {
         role: userType,
         ...(userType === "school" && { schoolName: formData.instituteName })
       };
-      
+
       const result = await register(userData);
-      
+
       if (result.success) {
         // Navigate based on user role
         if (userType === "school") {
@@ -60,11 +60,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-gray-900">
+    <div className="min-h-screen flex bg-white dark:bg-neutral-950">
       {/* Left Side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative">
-        <img 
-          src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200" 
+        <img
+          src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200"
           alt="College"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -80,7 +80,7 @@ export default function Register() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto bg-white dark:bg-gray-900">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto bg-white dark:bg-neutral-950">
         <div className="w-full max-w-md py-8">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-12">
@@ -103,16 +103,14 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setUserType("teacher")}
-              className={`p-5 border-2 rounded-xl transition ${
-                userType === "teacher"
-                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-gray-800"
+              className={`p-5 border-2 rounded-xl transition ${userType === "teacher"
+                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-neutral-900"
                   : "border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-              }`}
+                }`}
             >
               <div className="flex flex-col items-center">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                  userType === "teacher" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-gray-700"
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${userType === "teacher" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-neutral-800"
+                  }`}>
                   <svg className={`w-6 h-6 ${userType === "teacher" ? "text-white dark:text-gray-900" : "text-gray-700 dark:text-gray-300"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -125,16 +123,14 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setUserType("school")}
-              className={`p-5 border-2 rounded-xl transition ${
-                userType === "school"
-                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-gray-800"
+              className={`p-5 border-2 rounded-xl transition ${userType === "school"
+                  ? "border-gray-900 dark:border-gray-400 bg-gray-50 dark:bg-neutral-900"
                   : "border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-              }`}
+                }`}
             >
               <div className="flex flex-col items-center">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                  userType === "school" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-gray-700"
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${userType === "school" ? "bg-gray-900 dark:bg-white" : "bg-gray-100 dark:bg-gray-700"
+                  }`}>
                   <svg className={`w-6 h-6 ${userType === "school" ? "text-white dark:text-gray-900" : "text-gray-700 dark:text-gray-300"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -166,7 +162,7 @@ export default function Register() {
                   value={formData.firstName}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                   placeholder="John"
                 />
               </div>
@@ -181,7 +177,7 @@ export default function Register() {
                   value={formData.lastName}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                   placeholder="Doe"
                 />
               </div>
@@ -198,7 +194,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                 placeholder="you@example.com"
               />
             </div>
@@ -214,7 +210,7 @@ export default function Register() {
                 value={formData.phone}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                 placeholder="+91 98765 43210"
               />
             </div>
@@ -231,7 +227,7 @@ export default function Register() {
                   value={formData.instituteName}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                   placeholder="ABC Public School"
                 />
               </div>
@@ -248,7 +244,7 @@ export default function Register() {
                 value={formData.password}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-gray-800 disabled:opacity-50"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
                 placeholder="••••••••"
               />
             </div>
