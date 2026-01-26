@@ -116,7 +116,16 @@ export const updateListing = async (req, res, next) => {
       });
     }
 
-    listing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
+    // Filter req.body to prevent mass assignment
+    const allowedUpdates = ['name', 'description', 'spaceType', 'capacity', 'price', 'location', 'coordinates', 'amenities', 'images', 'availability', 'status'];
+    const updates = {};
+    Object.keys(req.body).forEach(key => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    listing = await Listing.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true
     });
