@@ -7,6 +7,26 @@ const AuthContext = createContext(null);
 const STORAGE_TOKEN_KEY = "eduSpaceToken";
 const STORAGE_USER_KEY = "eduSpaceUser";
 
+// Helper: get from either localStorage or sessionStorage
+const getStored = (key) => {
+  return localStorage.getItem(key) || sessionStorage.getItem(key);
+};
+
+const getStoredUser = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_USER_KEY) || sessionStorage.getItem(STORAGE_USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+// Helper: clear from both storages
+const clearStored = (key) => {
+  localStorage.removeItem(key);
+  sessionStorage.removeItem(key);
+};
+
 const authClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -15,7 +35,7 @@ const authClient = axios.create({
 });
 
 authClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+  const token = getStored(STORAGE_TOKEN_KEY);
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -32,40 +52,38 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_USER_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(() => localStorage.getItem(STORAGE_TOKEN_KEY));
+  const [user, setUser] = useState(() => getStoredUser());
+  const [token, setToken] = useState(() => getStored(STORAGE_TOKEN_KEY));
   const [loading, setLoading] = useState(true);
 
   const isAuthenticated = Boolean(token);
 
-  const persistAuth = (nextToken, nextUser) => {
+  // rememberMe = true → localStorage (persists), false → sessionStorage (clears on close)
+  const persistAuth = (nextToken, nextUser, remember = true) => {
+    const storage = remember ? localStorage : sessionStorage;
+
+    // Always clear both first to avoid stale data in the other storage
+    clearStored(STORAGE_TOKEN_KEY);
+    clearStored(STORAGE_USER_KEY);
+
     if (nextToken) {
-      localStorage.setItem(STORAGE_TOKEN_KEY, nextToken);
+      storage.setItem(STORAGE_TOKEN_KEY, nextToken);
       setToken(nextToken);
     } else {
-      localStorage.removeItem(STORAGE_TOKEN_KEY);
       setToken(null);
     }
 
     if (nextUser) {
-      localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(nextUser));
+      storage.setItem(STORAGE_USER_KEY, JSON.stringify(nextUser));
       setUser(nextUser);
     } else {
-      localStorage.removeItem(STORAGE_USER_KEY);
       setUser(null);
     }
   };
 
   const refreshMe = async () => {
-    if (!localStorage.getItem(STORAGE_TOKEN_KEY)) {
+    const storedToken = getStored(STORAGE_TOKEN_KEY);
+    if (!storedToken) {
       return { success: false };
     }
 
@@ -73,7 +91,9 @@ export const AuthProvider = ({ children }) => {
       const res = await authClient.get("/auth/me");
       const me = res?.data?.user || res?.data;
       if (me) {
-        persistAuth(localStorage.getItem(STORAGE_TOKEN_KEY), me);
+        // Keep in whichever storage it was already in
+        const isInLocal = Boolean(localStorage.getItem(STORAGE_TOKEN_KEY));
+        persistAuth(storedToken, me, isInLocal);
         return { success: true, user: me };
       }
       return { success: false };
@@ -86,7 +106,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const boot = async () => {
       setLoading(true);
-      if (localStorage.getItem(STORAGE_TOKEN_KEY)) {
+      if (getStored(STORAGE_TOKEN_KEY)) {
         await refreshMe();
       }
       setLoading(false);
@@ -96,7 +116,7 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = true) => {
     try {
       const res = await authClient.post("/auth/login", { email, password });
       const nextToken = res?.data?.token;
@@ -106,7 +126,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: res?.data?.message || "Login failed" };
       }
 
-      persistAuth(nextToken, nextUser);
+      persistAuth(nextToken, nextUser, rememberMe);
       return { success: true, user: nextUser, token: nextToken };
     } catch (err) {
       const message = err?.response?.data?.message || "Login failed";
@@ -124,7 +144,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: res?.data?.message || "Registration failed" };
       }
 
-      persistAuth(nextToken, nextUser);
+      persistAuth(nextToken, nextUser, true);
       return { success: true, user: nextUser, token: nextToken };
     } catch (err) {
       const message = err?.response?.data?.message || "Registration failed";
@@ -134,6 +154,37 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     persistAuth(null, null);
+  };
+
+  const forgotPassword = async (email) => {
+    try {
+      const res = await authClient.post("/auth/forgot-password", { email });
+      return { success: true, message: res?.data?.message };
+    } catch (err) {
+      const message = err?.response?.data?.message || "Failed to send reset email";
+      return { success: false, message };
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    try {
+      const res = await authClient.put(`/auth/reset-password/${token}`, { password });
+      const nextToken = res?.data?.token;
+      const nextUser = res?.data?.user;
+
+      if (nextToken && nextUser) {
+        persistAuth(nextToken, nextUser, true);
+      }
+
+      return { success: true, user: nextUser, message: res?.data?.message };
+    } catch (err) {
+      const message = err?.response?.data?.message || "Password reset failed";
+      return { success: false, message };
+    }
+  };
+
+  const persistAuthFromGoogle = (googleToken, googleUser) => {
+    persistAuth(googleToken, googleUser, true);
   };
 
   // Functions are stable and don't need to be in deps
@@ -147,7 +198,10 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
-      refreshMe
+      refreshMe,
+      forgotPassword,
+      resetPassword,
+      persistAuthFromGoogle
     }),
     [user, token, loading, isAuthenticated]
   );

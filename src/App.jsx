@@ -5,6 +5,9 @@ import Listings from "./pages/Listings";
 import ListingDetails from "./pages/ListingDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import GoogleCallback from "./pages/GoogleCallback";
 import NotFound from "./pages/NotFound";
 import SplashCursor from "./components/SplashCursor";
 
@@ -35,6 +38,9 @@ export default function App() {
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/school-dashboard" element={<SchoolDashboard />} />
           <Route path="*" element={<NotFound />} />

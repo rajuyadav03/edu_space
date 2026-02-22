@@ -25,6 +25,14 @@ export const loginRules = [
   body('password').notEmpty().withMessage('Password is required')
 ];
 
+export const forgotPasswordRules = [
+  body('email').isEmail().withMessage('Please provide a valid email').normalizeEmail()
+];
+
+export const resetPasswordRules = [
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+];
+
 export const listingRules = [
   body('name').trim().notEmpty().withMessage('Space name is required'),
   body('description').notEmpty().withMessage('Description is required'),

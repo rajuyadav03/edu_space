@@ -5,7 +5,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import connectDB from './config/db.js';
+import configurePassport from './config/passport.js';
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +17,9 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Configure Passport for Google OAuth
+configurePassport();
 
 // Set security headers
 app.use(helmet());
@@ -89,6 +95,51 @@ app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/users', userRoutes);
+
+// Initialize Passport (no sessions - we use JWT)
+app.use(passport.initialize());
+
+// Google OAuth Routes
+// GET /api/auth/google - Redirect to Google consent screen
+app.get('/api/auth/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
+    return res.status(503).json({
+      success: false,
+      message: 'Google OAuth is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env'
+    });
+  }
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false })(req, res, next);
+});
+
+// GET /api/auth/google/callback - Handle Google callback
+app.get('/api/auth/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: '/login?error=google_auth_failed' }),
+  (req, res) => {
+    try {
+      // Generate JWT token
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+      });
+
+      const user = {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        phone: req.user.phone
+      };
+
+      // Redirect to frontend callback page with token and user data
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const userStr = encodeURIComponent(JSON.stringify(user));
+      res.redirect(`${frontendUrl}/auth/google/callback?token=${token}&user=${userStr}`);
+    } catch (error) {
+      console.error('Google callback error:', error);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      res.redirect(`${frontendUrl}/auth/google/callback?error=${encodeURIComponent('Authentication failed')}`);
+    }
+  }
+);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
