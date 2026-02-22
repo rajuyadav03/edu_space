@@ -1,6 +1,18 @@
 import { useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "../lib/constants";
+
+// Fix Leaflet default marker icon for production builds (Vite doesn't resolve them automatically)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
 
 // Component to handle map centering when listing is hovered
 function MapController({ hoveredListing }) {
