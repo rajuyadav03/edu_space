@@ -403,20 +403,46 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                   </label>
                   <div className="space-y-3">
                     {[1, 2, 3].map((num) => (
-                      <div key={num} className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0">{num}</span>
-                        <input
-                          type="url"
-                          name={`imageUrl${num}`}
-                          value={formData[`imageUrl${num}`]}
-                          onChange={handleChange}
-                          placeholder={num === 1 ? "Main image URL (required for best results)" : `Image ${num} URL`}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition text-sm"
-                        />
+                      <div key={num} className="flex items-start gap-2">
+                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0 mt-3">{num}</span>
+                        <div className="flex-1">
+                          <input
+                            type="url"
+                            name={`imageUrl${num}`}
+                            value={formData[`imageUrl${num}`]}
+                            onChange={handleChange}
+                            placeholder={num === 1 ? "Main image URL (paste a direct image link)" : `Image ${num} URL`}
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition text-sm"
+                          />
+                        </div>
+                        {/* Live image preview */}
+                        {formData[`imageUrl${num}`]?.trim() && (
+                          <div className="w-14 h-14 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 bg-gray-100 dark:bg-gray-700">
+                            <img
+                              src={formData[`imageUrl${num}`].trim()}
+                              alt={`Preview ${num}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-full h-full items-center justify-center text-red-500 text-xs text-center p-1" style={{ display: 'none' }}>
+                              Invalid URL
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Leave all empty to use a default image. The listing detail page shows 3 images.</p>
+                  <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <p className="text-xs text-amber-700 dark:text-amber-400">
+                      <strong>Tip:</strong> Use <strong>direct image links</strong> (right-click image → "Copy image address"). URLs should look like: <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">https://images.unsplash.com/photo-...</code>
+                    </p>
+                    <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">
+                      ❌ Page links like <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">unsplash.com/photos/...</code> won't work — they are not direct image URLs.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
