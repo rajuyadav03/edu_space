@@ -19,10 +19,12 @@ export const createBooking = async (req, res, next) => {
     }
 
     // Calculate price based on time slot
-    let totalPrice = listing.price;
+    let basePrice = listing.price;
     if (timeSlot.includes('Half Day')) {
-      totalPrice = listing.price * 0.6; // 60% of full day price
+      basePrice = Math.round(listing.price * 0.6); // 60% of full day price
     }
+    const serviceFee = Math.round(basePrice * 0.1); // 10% platform fee
+    const totalPrice = basePrice + serviceFee;
 
     // Create booking
     const booking = await Booking.create({
@@ -31,6 +33,8 @@ export const createBooking = async (req, res, next) => {
       school: listing.owner,
       bookingDate,
       timeSlot,
+      basePrice,
+      serviceFee,
       totalPrice,
       purpose,
       numberOfStudents,

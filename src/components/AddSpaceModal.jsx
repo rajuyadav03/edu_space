@@ -1,6 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { listingsAPI } from "../services/api";
+
+// Fix Leaflet marker icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
 
 const SPACE_TYPES = [
   { value: "Classroom", label: "Classroom", icon: "📚" },
@@ -28,6 +41,17 @@ const AVAILABILITY_OPTIONS = [
   "Custom Schedule"
 ];
 
+// Component for clicking to pick location on map
+function LocationPicker({ position, onLocationSelect }) {
+  useMapEvents({
+    click(e) {
+      onLocationSelect(e.latlng.lat, e.latlng.lng);
+    }
+  });
+
+  return position ? <Marker position={position} /> : null;
+}
+
 export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -45,9 +69,12 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
     amenities: [],
     availability: "",
     customAvailability: "",
-    imageUrl: "",
+    imageUrl1: "",
+    imageUrl2: "",
+    imageUrl3: "",
     lat: "",
-    lng: ""
+    lng: "",
+    googleMapsLink: ""
   });
 
   // Reset form when modal opens
@@ -66,9 +93,12 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
         amenities: [],
         availability: "",
         customAvailability: "",
-        imageUrl: "",
+        imageUrl1: "",
+        imageUrl2: "",
+        imageUrl3: "",
         lat: "",
-        lng: ""
+        lng: "",
+        googleMapsLink: ""
       });
     }
   }, [isOpen]);
@@ -145,6 +175,11 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
         return "Weekdays";
       };
 
+      // Collect all non-empty image URLs
+      const images = [formData.imageUrl1, formData.imageUrl2, formData.imageUrl3]
+        .filter(url => url && url.trim())
+        .map(url => url.trim());
+
       const payload = {
         name: formData.name.trim(),
         spaceType: formData.spaceType,
@@ -153,11 +188,11 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
         price: parseInt(formData.price),
         location: `${formData.location.trim()}, ${formData.city}`,
         amenities: formData.amenities,
-        availability: mapAvailability(formData.availability === "Custom Schedule" 
-          ? formData.customAvailability 
+        availability: mapAvailability(formData.availability === "Custom Schedule"
+          ? formData.customAvailability
           : formData.availability),
-        images: formData.imageUrl 
-          ? [formData.imageUrl] 
+        images: images.length > 0
+          ? images
           : ["https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"],
         coordinates: {
           lat: formData.lat ? parseFloat(formData.lat) : 19.076 + Math.random() * 0.2,
@@ -166,7 +201,7 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
       };
 
       await listingsAPI.create(payload);
-      
+
       if (onSuccess) {
         onSuccess();
       }
@@ -184,11 +219,11 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
@@ -211,11 +246,10 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
           {/* Progress Bar */}
           <div className="mt-4 flex gap-2">
             {[1, 2, 3].map((s) => (
-              <div 
+              <div
                 key={s}
-                className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  s <= step ? "bg-gray-900 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
-                }`}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${s <= step ? "bg-gray-900 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
+                  }`}
               />
             ))}
           </div>
@@ -237,7 +271,7 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h3>
-                
+
                 {/* Space Name */}
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
@@ -264,11 +298,10 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                         key={type.value}
                         type="button"
                         onClick={() => setFormData({ ...formData, spaceType: type.value })}
-                        className={`p-4 border-2 rounded-xl transition text-center ${
-                          formData.spaceType === type.value
-                            ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
-                            : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
-                        }`}
+                        className={`p-4 border-2 rounded-xl transition text-center ${formData.spaceType === type.value
+                          ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
+                          }`}
                       >
                         <div className="text-2xl mb-1">{type.icon}</div>
                         <div className="text-sm font-medium text-gray-900 dark:text-white">{type.label}</div>
@@ -300,7 +333,7 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Details & Amenities</h3>
-                
+
                 <div className="grid grid-cols-2 gap-4 mb-5">
                   {/* Capacity */}
                   <div>
@@ -347,11 +380,10 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                         key={amenity}
                         type="button"
                         onClick={() => toggleAmenity(amenity)}
-                        className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition ${
-                          formData.amenities.includes(amenity)
-                            ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                            : "border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400"
-                        }`}
+                        className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition ${formData.amenities.includes(amenity)
+                          ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                          : "border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400"
+                          }`}
                       >
                         {formData.amenities.includes(amenity) && (
                           <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,20 +396,27 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                   </div>
                 </div>
 
-                {/* Image URL */}
+                {/* Image URLs */}
                 <div className="mt-5">
                   <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                    Image URL <span className="font-normal text-gray-500">(Optional)</span>
+                    Image URLs <span className="font-normal text-gray-500">(Optional — up to 3 images)</span>
                   </label>
-                  <input
-                    type="url"
-                    name="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
-                  />
-                  <p className="text-xs text-gray-500 mt-2">Leave empty to use a default image</p>
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((num) => (
+                      <div key={num} className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0">{num}</span>
+                        <input
+                          type="url"
+                          name={`imageUrl${num}`}
+                          value={formData[`imageUrl${num}`]}
+                          onChange={handleChange}
+                          placeholder={num === 1 ? "Main image URL (required for best results)" : `Image ${num} URL`}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition text-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">Leave all empty to use a default image. The listing detail page shows 3 images.</p>
                 </div>
               </div>
             </div>
@@ -388,7 +427,7 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Location & Availability</h3>
-                
+
                 {/* Address */}
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
@@ -436,11 +475,10 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                         key={option}
                         type="button"
                         onClick={() => setFormData({ ...formData, availability: option })}
-                        className={`p-3 border-2 rounded-xl text-sm font-medium transition text-left ${
-                          formData.availability === option
-                            ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
-                            : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
-                        }`}
+                        className={`p-3 border-2 rounded-xl text-sm font-medium transition text-left ${formData.availability === option
+                          ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
+                          }`}
                       >
                         <span className="text-gray-900 dark:text-white">{option}</span>
                       </button>
@@ -465,38 +503,90 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                   </div>
                 )}
 
-                {/* Optional: Coordinates */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                      Latitude <span className="font-normal text-gray-500">(Optional)</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="lat"
-                      value={formData.lat}
-                      onChange={handleChange}
-                      step="0.0001"
-                      placeholder="e.g., 19.0760"
-                      className="w-full px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
-                    />
+                {/* Location Picker */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                    📍 Pin Location on Map <span className="font-normal text-gray-500">(Click to set or paste Google Maps link)</span>
+                  </label>
+
+                  {/* Google Maps Link */}
+                  <input
+                    type="url"
+                    name="googleMapsLink"
+                    value={formData.googleMapsLink}
+                    onChange={(e) => {
+                      const link = e.target.value;
+                      setFormData(prev => ({ ...prev, googleMapsLink: link }));
+
+                      // Parse coordinates from Google Maps links
+                      // Supports formats: 
+                      //   https://maps.google.com/?q=19.076,72.877
+                      //   https://www.google.com/maps/@19.076,72.877,15z
+                      //   https://goo.gl/maps/...
+                      //   https://maps.app.goo.gl/...
+                      const patterns = [
+                        /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                        /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                        /place\/[^/]+\/@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                        /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                      ];
+
+                      for (const pattern of patterns) {
+                        const match = link.match(pattern);
+                        if (match) {
+                          setFormData(prev => ({
+                            ...prev,
+                            googleMapsLink: link,
+                            lat: match[1],
+                            lng: match[2]
+                          }));
+                          break;
+                        }
+                      }
+                    }}
+                    placeholder="Paste Google Maps link here..."
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition text-sm mb-3"
+                  />
+
+                  {/* Interactive Map */}
+                  <div className="rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600" style={{ height: "250px" }}>
+                    <MapContainer
+                      center={[
+                        formData.lat ? parseFloat(formData.lat) : 19.076,
+                        formData.lng ? parseFloat(formData.lng) : 72.877
+                      ]}
+                      zoom={12}
+                      className="h-full w-full"
+                      style={{ height: "100%", width: "100%" }}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution="© OpenStreetMap"
+                      />
+                      <LocationPicker
+                        position={
+                          formData.lat && formData.lng
+                            ? [parseFloat(formData.lat), parseFloat(formData.lng)]
+                            : null
+                        }
+                        onLocationSelect={(lat, lng) => {
+                          setFormData(prev => ({ ...prev, lat: lat.toFixed(6), lng: lng.toFixed(6) }));
+                        }}
+                      />
+                    </MapContainer>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                      Longitude <span className="font-normal text-gray-500">(Optional)</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="lng"
-                      value={formData.lng}
-                      onChange={handleChange}
-                      step="0.0001"
-                      placeholder="e.g., 72.8777"
-                      className="w-full px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition"
-                    />
-                  </div>
+
+                  {formData.lat && formData.lng ? (
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-2 flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Location set: {parseFloat(formData.lat).toFixed(4)}, {parseFloat(formData.lng).toFixed(4)}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-2">Click on the map or paste a Google Maps link to set location. Leave empty to auto-generate.</p>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Leave empty to auto-generate based on city</p>
               </div>
             </div>
           )}
@@ -566,3 +656,4 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
     </div>
   );
 }
+

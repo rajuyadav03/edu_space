@@ -25,6 +25,16 @@ const bookingSchema = new mongoose.Schema({
     enum: ['Full Day', 'Half Day (Morning)', 'Half Day (Evening)'],
     required: [true, 'Time slot is required']
   },
+  basePrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  serviceFee: {
+    type: Number,
+    required: true,
+    min: 0
+  },
   totalPrice: {
     type: Number,
     required: true,

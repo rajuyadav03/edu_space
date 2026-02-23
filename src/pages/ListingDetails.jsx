@@ -1,11 +1,23 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import BookingModal from "../components/BookingModal";
 import { listingsAPI } from "../services/api";
 import { listings as dummyListings } from "../data/listings";
+
+// Fix Leaflet default marker icon for production builds
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
 
 export default function ListingDetails() {
   const { id } = useParams();
@@ -109,18 +121,29 @@ export default function ListingDetails() {
             {/* Main Image */}
             <div className="lg:row-span-2 rounded-2xl overflow-hidden h-[400px] lg:h-[600px]">
               <img
-                src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+                src={(listing.images?.[0]) || listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
                 alt={listing.name || "Space"}
                 className="w-full h-full object-cover"
                 onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
               />
             </div>
-            {/* Gallery Images */}
-            <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200">
-              <img src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"} alt="Gallery" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }} />
+            {/* Gallery Image 2 */}
+            <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200 dark:bg-neutral-800">
+              <img
+                src={(listing.images?.[1]) || (listing.images?.[0]) || listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+                alt={`${listing.name} - 2`}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
+              />
             </div>
-            <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200">
-              <img src={listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"} alt="Gallery" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }} />
+            {/* Gallery Image 3 */}
+            <div className="rounded-2xl overflow-hidden h-[190px] lg:h-[292px] bg-gray-200 dark:bg-neutral-800">
+              <img
+                src={(listing.images?.[2]) || (listing.images?.[0]) || listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+                alt={`${listing.name} - 3`}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
+              />
             </div>
           </div>
         </div>
