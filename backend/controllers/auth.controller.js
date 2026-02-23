@@ -26,6 +26,14 @@ export const register = async (req, res, next) => {
       });
     }
 
+    // Block admin registration via public API
+    if (role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin accounts cannot be created through registration'
+      });
+    }
+
     // Create user
     const userData = {
       name,

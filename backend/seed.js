@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from './models/User.model.js';
 import Listing from './models/Listing.model.js';
+import Booking from './models/Booking.model.js';
 
 dotenv.config();
 
@@ -13,7 +14,19 @@ const seedData = async () => {
     // Clear existing data
     await User.deleteMany();
     await Listing.deleteMany();
+    await Booking.deleteMany();
     console.log('Cleared existing data');
+
+    // Create admin user
+    await User.create({
+      name: 'Super Admin',
+      email: 'admin@eduspace.in',
+      password: 'Admin@123',
+      role: 'admin',
+      phone: '+91 9000000000'
+    });
+    console.log('Admin user created');
+
 
     // Create school users
     const schools = await User.create([

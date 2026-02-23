@@ -88,6 +88,7 @@ app.get('/api/health', (req, res) => {
 import authRoutes from './routes/auth.routes.js';
 import listingRoutes from './routes/listing.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import userRoutes from './routes/user.routes.js';
 
 // API Routes
@@ -95,6 +96,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Initialize Passport (no sessions - we use JWT)
 app.use(passport.initialize());

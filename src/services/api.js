@@ -9,7 +9,7 @@ const client = axios.create({
 });
 
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem("eduSpaceToken");
+  const token = localStorage.getItem("eduSpaceToken") || sessionStorage.getItem("eduSpaceToken");
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -33,6 +33,17 @@ export const bookingsAPI = {
   getOne: (id) => client.get(`/bookings/${id}`),
   updateStatus: (id, status) => client.put(`/bookings/${id}/status`, { status }),
   cancel: (id) => client.put(`/bookings/${id}/cancel`)
+};
+
+export const adminAPI = {
+  getStats: () => client.get("/admin/stats"),
+  getUsers: (params) => client.get("/admin/users", { params }),
+  deleteUser: (id) => client.delete(`/admin/users/${id}`),
+  getListings: (params) => client.get("/admin/listings", { params }),
+  deleteListing: (id) => client.delete(`/admin/listings/${id}`),
+  getBookings: (params) => client.get("/admin/bookings", { params }),
+  updateBookingStatus: (id, status) => client.put(`/admin/bookings/${id}/status`, { status }),
+  deleteBooking: (id) => client.delete(`/admin/bookings/${id}`)
 };
 
 export default client;

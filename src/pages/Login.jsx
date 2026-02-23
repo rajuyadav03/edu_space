@@ -33,7 +33,9 @@ export default function Login() {
       if (result.success) {
         // Navigate based on user role
         const userRole = result.user?.role || user?.role;
-        if (userRole === "school") {
+        if (userRole === "admin") {
+          navigate("/admin-dashboard");
+        } else if (userRole === "school") {
           navigate("/school-dashboard");
         } else {
           navigate("/teacher-dashboard");

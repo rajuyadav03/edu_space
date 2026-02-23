@@ -14,6 +14,7 @@ import SplashCursor from "./components/SplashCursor";
 // Lazy load dashboard pages for better initial page load
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
 const SchoolDashboard = lazy(() => import("./pages/SchoolDashboard"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 // Loading fallback for lazy components
 function PageLoader() {
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/school-dashboard" element={<SchoolDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

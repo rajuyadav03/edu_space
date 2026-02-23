@@ -34,6 +34,7 @@ export const FloatingNav = ({ navItems, className }) => {
   });
 
   const getDashboardLink = () => {
+    if (user?.role === "admin") return "/admin-dashboard";
     if (user?.role === "school") return "/school-dashboard";
     return "/teacher-dashboard";
   };
