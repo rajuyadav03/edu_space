@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
@@ -43,6 +43,10 @@ export default function AdminDashboard() {
 
     const [actionLoading, setActionLoading] = useState(null);
 
+    // Use refs so fetchTabData doesn't re-create on every keystroke
+    const filtersRef = useRef({ userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter });
+    filtersRef.current = { userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter };
+
     // Auth guard
     useEffect(() => {
         if (!authLoading && (!isAuthenticated || user?.role !== "admin")) {
@@ -50,9 +54,10 @@ export default function AdminDashboard() {
         }
     }, [isAuthenticated, authLoading, user, navigate]);
 
-    // Fetch data based on active tab
+    // Fetch data based on active tab (stable — doesn't depend on search/filter values)
     const fetchTabData = useCallback(async () => {
         if (!isAuthenticated || user?.role !== "admin") return;
+        const f = filtersRef.current;
         try {
             setLoading(true);
             setError("");
@@ -62,13 +67,13 @@ export default function AdminDashboard() {
                 setStats(res.data.stats);
                 setRecentBookings(res.data.recentBookings || []);
             } else if (activeTab === "users") {
-                const res = await adminAPI.getUsers({ search: userSearch, role: userRoleFilter });
+                const res = await adminAPI.getUsers({ search: f.userSearch, role: f.userRoleFilter });
                 setUsers(res.data.users || []);
             } else if (activeTab === "listings") {
-                const res = await adminAPI.getListings({ search: listingSearch });
+                const res = await adminAPI.getListings({ search: f.listingSearch });
                 setListings(res.data.listings || []);
             } else if (activeTab === "bookings") {
-                const res = await adminAPI.getBookings({ search: bookingSearch, status: bookingStatusFilter });
+                const res = await adminAPI.getBookings({ search: f.bookingSearch, status: f.bookingStatusFilter });
                 setBookings(res.data.bookings || []);
             }
         } catch (err) {
@@ -77,13 +82,24 @@ export default function AdminDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [activeTab, isAuthenticated, user, userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter]);
+    }, [activeTab, isAuthenticated, user]);
 
+    // Fetch on tab change or initial load
     useEffect(() => {
         if (isAuthenticated && !authLoading && user?.role === "admin") {
             fetchTabData();
         }
     }, [fetchTabData, isAuthenticated, authLoading]);
+
+    // Debounced search — waits 500ms after last keystroke before fetching
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (isAuthenticated && !authLoading && user?.role === "admin") {
+                fetchTabData();
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter]);
 
     const showSuccess = (msg) => {
         setSuccessMsg(msg);
@@ -210,8 +226,8 @@ export default function AdminDashboard() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${activeTab === tab.id
-                                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md"
-                                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                                ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md"
+                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -371,8 +387,8 @@ function UsersTab({ users, loading, search, setSearch, roleFilter, setRoleFilter
                                         <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.email}</td>
                                         <td className="px-5 py-4">
                                             <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium capitalize ${u.role === 'school'
-                                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                                : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
                                                 }`}>{u.role}</span>
                                         </td>
                                         <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.phone || "—"}</td>

@@ -68,24 +68,24 @@ export const getStats = async (req, res, next) => {
 export const getAllUsers = async (req, res, next) => {
     try {
         const { search, role } = req.query;
-        let query = { role: { $ne: 'admin' } }; // Don't show admin users
+        const conditions = [{ role: { $ne: 'admin' } }]; // Never show admin users
 
         if (role && role !== 'all') {
-            query.role = role;
+            conditions.push({ role });
         }
 
         if (search) {
-            query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { schoolName: { $regex: search, $options: 'i' } },
-                { phone: { $regex: search, $options: 'i' } }
-            ];
-            // Keep the role filter if set
-            if (role && role !== 'all') {
-                query.role = role;
-            }
+            conditions.push({
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } },
+                    { schoolName: { $regex: search, $options: 'i' } },
+                    { phone: { $regex: search, $options: 'i' } }
+                ]
+            });
         }
+
+        const query = conditions.length > 1 ? { $and: conditions } : conditions[0];
 
         const users = await User.find(query)
             .select('-password -resetPasswordToken -resetPasswordExpire -googleId')
@@ -249,6 +249,14 @@ export const getAllBookings = async (req, res, next) => {
 export const updateBookingStatusAdmin = async (req, res, next) => {
     try {
         const { status } = req.body;
+
+        const validStatuses = ['pending', 'confirmed', 'rejected', 'cancelled', 'completed'];
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+            });
+        }
 
         const booking = await Booking.findById(req.params.id);
 
