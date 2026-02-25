@@ -51,4 +51,10 @@ export const userAPI = {
   updateProfile: (data) => client.put("/users/profile", data)
 };
 
+export const favoritesAPI = {
+  getAll: () => client.get("/users/favorites"),
+  add: (listingId) => client.post(`/users/favorites/${listingId}`),
+  remove: (listingId) => client.delete(`/users/favorites/${listingId}`)
+};
+
 export default client;

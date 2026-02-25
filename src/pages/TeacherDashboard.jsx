@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { bookingsAPI } from "../services/api";
+import { bookingsAPI, favoritesAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function TeacherDashboard() {
@@ -15,6 +15,8 @@ export default function TeacherDashboard() {
   const [actionError, setActionError] = useState("");
   const [cancellingId, setCancellingId] = useState(null);
   const [activeTab, setActiveTab] = useState("bookings");
+  const [favorites, setFavorites] = useState([]);
+  const [favLoading, setFavLoading] = useState(false);
 
   // Redirect if not authenticated or not a teacher
   useEffect(() => {
@@ -166,8 +168,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("bookings")}
                   className={`py-4 border-b-2 font-semibold transition ${activeTab === "bookings"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     }`}
                 >
                   My Bookings
@@ -176,8 +178,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("favorites")}
                   className={`py-4 border-b-2 font-medium transition ${activeTab === "favorites"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     }`}
                 >
                   Favorites
@@ -186,8 +188,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("profile")}
                   className={`py-4 border-b-2 font-medium transition ${activeTab === "profile"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     }`}
                 >
                   Profile
@@ -257,10 +259,10 @@ export default function TeacherDashboard() {
                                 </p>
                               </div>
                               <span className={`px-4 py-2 rounded-full text-sm font-semibold ${booking.status === 'confirmed' || booking.status === 'Confirmed'
-                                  ? 'bg-green-100 text-green-700'
-                                  : booking.status === 'rejected' || booking.status === 'Rejected'
-                                    ? 'bg-red-100 text-red-700'
-                                    : 'bg-yellow-100 text-yellow-700'
+                                ? 'bg-green-100 text-green-700'
+                                : booking.status === 'rejected' || booking.status === 'Rejected'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-yellow-100 text-yellow-700'
                                 }`}>
                                 {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown'}
                               </span>
@@ -325,24 +327,21 @@ export default function TeacherDashboard() {
 
               {/* Favorites Tab */}
               {activeTab === "favorites" && (
-                <div className="text-center py-12">
-                  <svg className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">Save your favorite spaces by clicking the heart icon on any listing</p>
-                  <Link to="/listings" className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition inline-block">
-                    Browse Spaces
-                  </Link>
-                </div>
+                <FavoritesTab
+                  favorites={favorites}
+                  setFavorites={setFavorites}
+                  favLoading={favLoading}
+                  setFavLoading={setFavLoading}
+                  isAuthenticated={isAuthenticated}
+                />
               )}
 
               {/* Profile Tab */}
               {activeTab === "profile" && (
                 <div className="max-w-lg mx-auto">
                   <div className="text-center mb-8">
-                    <div className="w-24 h-24 bg-gray-200 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <span className="text-3xl font-bold text-gray-600 dark:text-gray-300">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl font-bold text-white">
                         {user?.name?.charAt(0)?.toUpperCase() || 'T'}
                       </span>
                     </div>
@@ -363,9 +362,12 @@ export default function TeacherDashboard() {
                       <p className="text-gray-900 dark:text-white font-medium">{user?.phone || 'Not set'}</p>
                     </div>
                   </div>
-                  <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-                    Profile editing will be available when backend is connected
-                  </p>
+                  <Link
+                    to="/profile"
+                    className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
+                  >
+                    Edit Profile
+                  </Link>
                 </div>
               )}
             </div>
@@ -375,5 +377,110 @@ export default function TeacherDashboard() {
 
       <Footer />
     </>
+  );
+}
+
+// Favorites Tab Component
+function FavoritesTab({ favorites, setFavorites, favLoading, setFavLoading, isAuthenticated }) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated || loaded) return;
+
+    const fetchFavorites = async () => {
+      try {
+        setFavLoading(true);
+        const res = await favoritesAPI.getAll();
+        const favs = res.data?.favorites || res.data || [];
+        setFavorites(favs);
+      } catch (err) {
+        console.error("Failed to fetch favorites:", err);
+      } finally {
+        setFavLoading(false);
+        setLoaded(true);
+      }
+    };
+    fetchFavorites();
+  }, [isAuthenticated, loaded, setFavorites, setFavLoading]);
+
+  const handleRemoveFavorite = async (listingId) => {
+    try {
+      await favoritesAPI.remove(listingId);
+      setFavorites(favorites.filter(f => (f._id || f.id) !== listingId));
+    } catch (err) {
+      console.error("Failed to remove favorite:", err);
+    }
+  };
+
+  if (favLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="animate-pulse bg-gray-50 dark:bg-neutral-800 rounded-2xl overflow-hidden">
+            <div className="aspect-[4/3] bg-gray-200 dark:bg-neutral-700" />
+            <div className="p-5 space-y-3">
+              <div className="h-5 bg-gray-200 dark:bg-neutral-700 rounded w-3/4" />
+              <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-1/2" />
+              <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-1/4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (favorites.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <svg className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Save your favorite spaces by clicking the heart icon on any listing</p>
+        <Link to="/listings" className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition inline-block">
+          Browse Spaces
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {favorites.map((listing) => (
+        <div key={listing._id || listing.id} className="bg-gray-50 dark:bg-neutral-900/50 rounded-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 hover:shadow-lg transition group">
+          <Link to={`/listing/${listing._id || listing.id}`} className="block">
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <img
+                src={listing.images?.[0] || listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}
+                alt={listing.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"; }}
+              />
+              <div className="absolute bottom-3 left-3 px-3 py-1 bg-white/90 dark:bg-neutral-900/90 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300">
+                {listing.spaceType}
+              </div>
+            </div>
+            <div className="p-5">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-1 line-clamp-1">{listing.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-1">{listing.location}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-bold text-gray-900 dark:text-white">₹{listing.price}<span className="text-sm font-normal text-gray-500">/day</span></span>
+              </div>
+            </div>
+          </Link>
+          <div className="px-5 pb-4">
+            <button
+              onClick={() => handleRemoveFavorite(listing._id || listing.id)}
+              className="w-full py-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Remove from Favorites
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

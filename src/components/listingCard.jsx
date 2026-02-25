@@ -1,7 +1,37 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { favoritesAPI } from "../services/api";
 
-function ListingCard({ item, onHover }) {
+function ListingCard({ item, onHover, isFavorited = false, onFavoriteToggle }) {
+  const { isAuthenticated } = useAuth();
+  const [fav, setFav] = useState(isFavorited);
+  const [toggling, setToggling] = useState(false);
+
+  const handleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) return;
+    if (toggling) return;
+
+    try {
+      setToggling(true);
+      const listingId = item._id || item.id;
+      if (fav) {
+        await favoritesAPI.remove(listingId);
+        setFav(false);
+      } else {
+        await favoritesAPI.add(listingId);
+        setFav(true);
+      }
+      onFavoriteToggle?.(listingId, !fav);
+    } catch (err) {
+      console.error("Favorite toggle failed:", err);
+    } finally {
+      setToggling(false);
+    }
+  };
+
   return (
     <Link
       to={`/listing/${item._id || item.id}`}
@@ -21,18 +51,19 @@ function ListingCard({ item, onHover }) {
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {/* Favorite Button - Glassmorphism */}
+        {/* Favorite Button */}
         <button
           type="button"
-          aria-label={`Add ${item.name} to favorites`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // TODO: Add to favorites functionality
-          }}
-          className="heart-btn absolute top-4 right-4 w-11 h-11 glass rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          aria-label={fav ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`}
+          onClick={handleFavorite}
+          className={`heart-btn absolute top-4 right-4 w-11 h-11 glass rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-transform ${toggling ? 'scale-90 opacity-60' : ''}`}
         >
-          <svg className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className={`w-5 h-5 transition-colors ${fav ? 'text-pink-500 fill-pink-500' : 'text-gray-700 dark:text-gray-300 group-hover:text-pink-500 dark:group-hover:text-pink-400'}`}
+            fill={fav ? "currentColor" : "none"}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </button>
@@ -45,12 +76,9 @@ function ListingCard({ item, onHover }) {
 
       {/* Content */}
       <div className="p-6">
-        {/* Title */}
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 text-hover-slide tracking-tight line-clamp-1">
           {item.name}
         </h3>
-
-        {/* Location */}
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-1.5">
           <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -59,7 +87,6 @@ function ListingCard({ item, onHover }) {
           <span className="truncate">{item.location}</span>
         </p>
 
-        {/* Capacity Tag */}
         <div className="flex items-center gap-2 mb-5">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-neutral-800/50 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,14 +96,11 @@ function ListingCard({ item, onHover }) {
           </span>
         </div>
 
-        {/* Price Row */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-neutral-800/50">
           <div>
             <span className="text-2xl font-bold text-gray-900 dark:text-white">₹{item.price}</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">/day</span>
           </div>
-
-          {/* Animated Arrow Button */}
           <div className="btn-premium-arrow w-11 h-11 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 transition-colors duration-300">
             <svg className="w-5 h-5 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
