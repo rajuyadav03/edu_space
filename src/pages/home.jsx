@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import ListingCard from "../components/listingCard";
-import { listingsAPI } from "../services/api";
+import { listingsAPI, favoritesAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../lib/constants";
 
 export default function Home() {
@@ -18,6 +19,8 @@ export default function Home() {
   const [featuredListings, setFeaturedListings] = useState([]);
   const [stats, setStats] = useState({ spaces: 0, schools: 0, bookings: 0 });
   const [loading, setLoading] = useState(true);
+  const [favoriteIds, setFavoriteIds] = useState(new Set());
+  const { isAuthenticated } = useAuth();
 
   // Fetch featured listings and stats from API
   useEffect(() => {
@@ -46,6 +49,17 @@ export default function Home() {
     };
     fetchData();
   }, []);
+
+  // Fetch user's favorites to show correct heart state
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    favoritesAPI.getAll()
+      .then(res => {
+        const favs = res.data?.favorites || res.data || [];
+        setFavoriteIds(new Set(favs.map(f => f._id || f.id)));
+      })
+      .catch(() => { });
+  }, [isAuthenticated]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -208,7 +222,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredListings.map((item) => (
-                <ListingCard key={item._id} item={item} />
+                <ListingCard key={item._id} item={item} isFavorited={favoriteIds.has(item._id)} />
               ))}
             </div>
           )}

@@ -5,7 +5,8 @@ import ListingCard from "../components/listingCard";
 import MapView from "../components/MapView";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ListingGridSkeleton } from "../components/Skeleton";
-import { listingsAPI } from "../services/api";
+import { listingsAPI, favoritesAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import { DEFAULT_MAP_CENTER, PRICE_RANGE, SPACE_TYPES } from "../lib/constants";
 
 export default function Listings() {
@@ -17,6 +18,8 @@ export default function Listings() {
   const [allListings, setAllListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favoriteIds, setFavoriteIds] = useState(new Set());
+  const { isAuthenticated } = useAuth();
 
   // Fetch listings from backend on mount
   useEffect(() => {
@@ -50,6 +53,17 @@ export default function Listings() {
 
     fetchListings();
   }, []);
+
+  // Fetch user's favorites to show correct heart state
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    favoritesAPI.getAll()
+      .then(res => {
+        const favs = res.data?.favorites || res.data || [];
+        setFavoriteIds(new Set(favs.map(f => f._id || f.id)));
+      })
+      .catch(() => { });
+  }, [isAuthenticated]);
 
   // Memoized filtering - recomputes only when dependencies change
   const filteredListings = useMemo(() => {
@@ -169,8 +183,8 @@ export default function Listings() {
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
                   className={`px-5 py-2.5 rounded-xl font-medium transition whitespace-nowrap ${activeFilter === filter
-                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : 'bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-neutral-500'
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                    : 'bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-neutral-500'
                     }`}
                 >
                   {filter === "All" ? "All Spaces" : filter}
@@ -202,6 +216,7 @@ export default function Listings() {
                     key={item.id}
                     item={item}
                     onHover={setHoveredListing}
+                    isFavorited={favoriteIds.has(item._id || item.id)}
                   />
                 ))
               ) : (
