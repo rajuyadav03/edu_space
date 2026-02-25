@@ -11,10 +11,13 @@ import GoogleCallback from "./pages/GoogleCallback";
 import NotFound from "./pages/NotFound";
 import SplashCursor from "./components/SplashCursor";
 
-// Lazy load dashboard pages for better initial page load
+// Lazy load pages for better initial page load
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
 const SchoolDashboard = lazy(() => import("./pages/SchoolDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 // Loading fallback for lazy components
 function PageLoader() {
@@ -45,6 +48,9 @@ export default function App() {
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/school-dashboard" element={<SchoolDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

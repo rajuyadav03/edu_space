@@ -84,6 +84,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Public platform stats (for home page)
+app.get('/api/stats/public', async (req, res) => {
+  try {
+    const [User, Listing, Booking] = await Promise.all([
+      import('./models/User.model.js').then(m => m.default),
+      import('./models/Listing.model.js').then(m => m.default),
+      import('./models/Booking.model.js').then(m => m.default)
+    ]);
+    const [spaces, schools, bookings] = await Promise.all([
+      Listing.countDocuments({ status: 'active' }),
+      User.countDocuments({ role: 'school' }),
+      Booking.countDocuments()
+    ]);
+    res.json({ success: true, stats: { spaces, schools, bookings } });
+  } catch {
+    res.json({ success: true, stats: { spaces: 0, schools: 0, bookings: 0 } });
+  }
+});
+
 // Import routes
 import authRoutes from './routes/auth.routes.js';
 import listingRoutes from './routes/listing.routes.js';

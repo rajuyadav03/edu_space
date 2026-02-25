@@ -24,10 +24,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-4">Company</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link to="/" className="hover:text-white transition">About</Link></li>
-              <li><Link to="/" className="hover:text-white transition">How It Works</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Careers</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Contact</Link></li>
+              <li><Link to="/about" className="hover:text-white transition">About</Link></li>
+              <li><Link to="/about" className="hover:text-white transition">How It Works</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">Contact</Link></li>
             </ul>
           </div>
 
@@ -37,8 +36,8 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li><Link to="/listings" className="hover:text-white transition">Browse Spaces</Link></li>
               <li><Link to="/register" className="hover:text-white transition">List Your Space</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Help Center</Link></li>
-              <li><Link to="/" className="hover:text-white transition">FAQs</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">Help Center</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">FAQs</Link></li>
             </ul>
           </div>
 
@@ -46,10 +45,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-4">Legal</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link to="/" className="hover:text-white transition">Privacy Policy</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Terms of Service</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Refund Policy</Link></li>
-              <li><Link to="/" className="hover:text-white transition">Safety</Link></li>
+              <li><Link to="/about" className="hover:text-white transition">Privacy Policy</Link></li>
+              <li><Link to="/about" className="hover:text-white transition">Terms of Service</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">Refund Policy</Link></li>
             </ul>
           </div>
         </div>

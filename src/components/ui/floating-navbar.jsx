@@ -9,7 +9,7 @@ import {
 import { cn } from "../../lib/utils";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
-import { Sun, Moon, User, LogOut } from "lucide-react";
+import { Sun, Moon, User, LogOut, UserCog } from "lucide-react";
 
 export const FloatingNav = ({ navItems, className }) => {
   const { scrollYProgress } = useScroll();
@@ -110,6 +110,14 @@ export const FloatingNav = ({ navItems, className }) => {
             >
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">{user?.name?.split(' ')[0] || 'Dashboard'}</span>
+            </Link>
+            <Link
+              to="/profile"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition text-gray-700 dark:text-gray-300"
+              aria-label="Edit Profile"
+              title="Edit Profile"
+            >
+              <UserCog className="w-4 h-4" />
             </Link>
             <button
               onClick={logout}

@@ -46,4 +46,9 @@ export const adminAPI = {
   deleteBooking: (id) => client.delete(`/admin/bookings/${id}`)
 };
 
+export const userAPI = {
+  getProfile: () => client.get("/users/profile"),
+  updateProfile: (data) => client.put("/users/profile", data)
+};
+
 export default client;
