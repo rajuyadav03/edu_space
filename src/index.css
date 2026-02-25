@@ -212,3 +212,267 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* ========================================
+   EDUSPACE PREMIUM LOADER
+   ======================================== */
+
+.eduspace-loader {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.loader-building {
+  position: relative;
+  width: 80px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loader-roof {
+  width: 70px;
+  height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 20px solid #6366f1;
+  animation: roofPulse 2s ease-in-out infinite;
+  margin-bottom: 2px;
+}
+
+.dark .loader-roof {
+  border-bottom-color: #818cf8;
+}
+
+.loader-blocks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  width: 60px;
+}
+
+.loader-block {
+  width: 18px;
+  height: 14px;
+  border-radius: 3px;
+  animation: blockBuild 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: bottom center;
+}
+
+.block-1 {
+  background: #6366f1;
+  animation-delay: 0s;
+}
+
+.block-2 {
+  background: #818cf8;
+  animation-delay: 0.1s;
+}
+
+.block-3 {
+  background: #a78bfa;
+  animation-delay: 0.2s;
+}
+
+.block-4 {
+  background: #8b5cf6;
+  animation-delay: 0.3s;
+}
+
+.block-5 {
+  background: #7c3aed;
+  animation-delay: 0.4s;
+}
+
+.block-6 {
+  background: #6d28d9;
+  animation-delay: 0.5s;
+}
+
+.loader-door {
+  width: 14px;
+  height: 18px;
+  background: #4f46e5;
+  border-radius: 7px 7px 0 0;
+  margin-top: 3px;
+  animation: doorAppear 1.8s ease-in-out infinite;
+}
+
+.dark .loader-door {
+  background: #a78bfa;
+}
+
+.loader-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6366f1;
+  opacity: 0;
+}
+
+.loader-particle.p-1 {
+  top: 10px;
+  left: 10px;
+  animation: particleFloat 2.5s ease-in-out infinite 0s;
+}
+
+.loader-particle.p-2 {
+  top: 20px;
+  right: 5px;
+  animation: particleFloat 2.5s ease-in-out infinite 0.8s;
+  background: #a78bfa;
+}
+
+.loader-particle.p-3 {
+  top: 5px;
+  right: 20px;
+  animation: particleFloat 2.5s ease-in-out infinite 1.6s;
+  background: #ec4899;
+}
+
+.loader-ground {
+  position: absolute;
+  bottom: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #a78bfa, #6366f1, transparent);
+  border-radius: 1px;
+  animation: groundPulse 2s ease-in-out infinite;
+}
+
+.loader-progress {
+  background: linear-gradient(90deg, #6366f1, #a78bfa, #ec4899, #6366f1);
+  background-size: 200% auto;
+  animation: progressSlide 1.5s linear infinite;
+}
+
+.loader-text-fade {
+  animation: textFade 2s ease-in-out infinite;
+}
+
+.loader-dots::after {
+  content: '';
+  animation: loadingDots 1.5s steps(4, end) infinite;
+}
+
+@keyframes blockBuild {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+  }
+}
+
+@keyframes roofPulse {
+
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scaleX(1.1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes doorAppear {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(0.6);
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-15px) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0);
+  }
+}
+
+@keyframes groundPulse {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes progressSlide {
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes textFade {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes loadingDots {
+  0% {
+    content: '';
+  }
+
+  25% {
+    content: '.';
+  }
+
+  50% {
+    content: '..';
+  }
+
+  75% {
+    content: '...';
+  }
+}
