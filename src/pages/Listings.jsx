@@ -19,7 +19,7 @@ export default function Listings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   // Fetch listings from backend on mount
   useEffect(() => {
@@ -56,14 +56,14 @@ export default function Listings() {
 
   // Fetch user's favorites to show correct heart state
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (authLoading || !isAuthenticated) return;
     favoritesAPI.getAll()
       .then(res => {
         const favs = res.data?.favorites || res.data || [];
         setFavoriteIds(new Set(favs.map(f => f._id || f.id)));
       })
       .catch(() => { });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authLoading]);
 
   // Memoized filtering - recomputes only when dependencies change
   const filteredListings = useMemo(() => {

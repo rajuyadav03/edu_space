@@ -20,7 +20,7 @@ export default function Home() {
   const [stats, setStats] = useState({ spaces: 0, schools: 0, bookings: 0 });
   const [loading, setLoading] = useState(true);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   // Fetch featured listings and stats from API
   useEffect(() => {
@@ -52,14 +52,14 @@ export default function Home() {
 
   // Fetch user's favorites to show correct heart state
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (authLoading || !isAuthenticated) return;
     favoritesAPI.getAll()
       .then(res => {
         const favs = res.data?.favorites || res.data || [];
         setFavoriteIds(new Set(favs.map(f => f._id || f.id)));
       })
       .catch(() => { });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authLoading]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
