@@ -271,12 +271,12 @@ export default function Home() {
               }
             ].map((item) => (
               <div key={item.step} className="relative group">
-                <div className="bg-gray-50 dark:bg-neutral-900 rounded-2xl p-8 border border-gray-100 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-600 transition-all hover:shadow-lg">
+                <div className="bg-gray-50 dark:bg-neutral-900 rounded-2xl p-8 border border-gray-100 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-600 transition-all hover:shadow-lg h-full">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="w-14 h-14 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-gray-900 shadow-lg">
                       {item.icon}
                     </div>
-                    <span className="text-5xl font-bold text-gray-100 dark:text-neutral-800">{item.step}</span>
+                    <span className="text-5xl font-bold text-gray-200 dark:text-neutral-700">{item.step}</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{item.description}</p>
