@@ -398,7 +398,7 @@ export default function ProfilePage() {
                                             </div>
                                         )}
 
-                                        <form onSubmit={handleKYCSubmit} className="space-y-4">
+                                        <div className="space-y-4">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                                     Aadhaar Number <span className="text-xs text-gray-400">(12 digits)</span>
@@ -479,7 +479,8 @@ export default function ProfilePage() {
                                                 )}
                                             </div>
                                             <button
-                                                type="submit"
+                                                type="button"
+                                                onClick={handleKYCSubmit}
                                                 disabled={kycSaving}
                                                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-semibold transition-all disabled:opacity-60"
                                             >
@@ -495,7 +496,7 @@ export default function ProfilePage() {
                                                     </>
                                                 )}
                                             </button>
-                                        </form>
+                                        </div>
                                     </>
                                 )}
                             </div>
