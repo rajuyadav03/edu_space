@@ -138,7 +138,7 @@ export const FloatingNav = ({ navItems, className }) => {
           aria-label="Toggle theme"
         >
           {theme === 'light' ? (
-            <Moon className={cn("w-4 h-4", isBlock ? "text-slate-900" : "")} />
+            <Moon className={cn("w-4 h-4", isBlock ? "text-slate-900 dark:text-white" : "")} />
           ) : (
             <Sun className={cn("w-4 h-4", isBlock ? "text-amber-500" : "text-yellow-400")} />
           )}
@@ -152,7 +152,7 @@ export const FloatingNav = ({ navItems, className }) => {
               className={cn(
                 "relative text-sm px-4 py-2 transition ml-1 flex items-center gap-2",
                 isBlock
-                  ? "border-[2px] font-bold border-slate-900 dark:border-neutral-700 rounded-xl hover:bg-slate-50 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-slate-900 dark:text-white"
+                  ? "border-[2px] font-bold border-slate-900 dark:border-neutral-700 rounded-xl hover:bg-slate-50 dark:hover:bg-neutral-800 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-slate-900 dark:text-white"
                   : "border font-medium border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white rounded-full hover:bg-gray-50 dark:hover:bg-neutral-800"
               )}
             >
@@ -164,7 +164,7 @@ export const FloatingNav = ({ navItems, className }) => {
               className={cn(
                 "p-2 transition ml-1",
                 isBlock
-                  ? "rounded-xl border-2 border-slate-900 dark:border-neutral-700 hover:bg-amber-100 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-slate-700 dark:text-gray-300"
+                  ? "rounded-xl border-2 border-slate-900 dark:border-neutral-700 hover:bg-amber-100 dark:hover:bg-neutral-800 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-slate-700 dark:text-gray-300"
                   : "rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-gray-300"
               )}
               aria-label="Edit Profile"
@@ -177,7 +177,7 @@ export const FloatingNav = ({ navItems, className }) => {
               className={cn(
                 "p-2 transition ml-1",
                 isBlock
-                  ? "rounded-xl border-2 border-slate-900 dark:border-neutral-700 hover:bg-red-100 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-red-600 dark:text-red-400"
+                  ? "rounded-xl border-2 border-slate-900 dark:border-neutral-700 hover:bg-red-100 dark:hover:bg-red-900/40 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none text-red-600 dark:text-red-400"
                   : "rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-gray-300"
               )}
               aria-label="Logout"

@@ -257,7 +257,7 @@ export default function Register() {
                       className={cn(
                         "w-full pl-10 pr-3 py-3.5 transition disabled:opacity-50",
                         isBlock
-                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                           : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                       )}
                       placeholder="John"
@@ -282,7 +282,7 @@ export default function Register() {
                       className={cn(
                         "w-full pl-10 pr-3 py-3.5 transition disabled:opacity-50",
                         isBlock
-                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                           : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                       )}
                       placeholder="Doe"
@@ -309,7 +309,7 @@ export default function Register() {
                     className={cn(
                       "w-full pl-11 pr-4 py-3.5 transition disabled:opacity-50",
                       isBlock
-                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                         : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                     )}
                     placeholder="you@example.com"
@@ -335,7 +335,7 @@ export default function Register() {
                     className={cn(
                       "w-full pl-11 pr-4 py-3.5 transition disabled:opacity-50",
                       isBlock
-                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                         : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                     )}
                     placeholder="+1 (555) 000-0000"
@@ -362,7 +362,7 @@ export default function Register() {
                       className={cn(
                         "w-full pl-11 pr-4 py-3.5 transition disabled:opacity-50",
                         isBlock
-                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                          ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                           : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                       )}
                       placeholder="e.g. Oxford University"
@@ -389,7 +389,7 @@ export default function Register() {
                     className={cn(
                       "w-full pl-11 pr-12 py-3.5 transition disabled:opacity-50",
                       isBlock
-                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                        ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
                         : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
                     )}
                     placeholder="••••••••"
@@ -422,7 +422,7 @@ export default function Register() {
                   className={cn(
                     "w-5 h-5 mt-0.5 transition-all text-blue-600 outline-none focus:ring-0",
                     isBlock
-                      ? "border-2 border-slate-900 rounded-md bg-white checked:bg-amber-400 checked:border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                      ? "border-2 border-slate-900 dark:border-slate-600 rounded-md bg-white dark:bg-neutral-900 checked:bg-amber-400 text-slate-900 checked:border-slate-900 dark:checked:border-slate-500 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]"
                       : "border-gray-300 rounded focus:ring-gray-900"
                   )}
                 />
@@ -441,7 +441,7 @@ export default function Register() {
                   className={cn(
                     "w-full py-4 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group",
                     isBlock
-                      ? "bg-amber-300 text-slate-900 border-4 border-slate-900 rounded-xl font-black text-lg uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[4px] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                      ? "bg-amber-300 text-slate-900 border-4 border-slate-900 dark:border-slate-700 rounded-xl font-black text-lg uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-[4px] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]"
                       : "bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-md"
                   )}
                 >
