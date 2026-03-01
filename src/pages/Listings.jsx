@@ -5,8 +5,11 @@ import ListingCard from "../components/listingCard";
 import MapView from "../components/MapView";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ListingGridSkeleton } from "../components/Skeleton";
+import { AnimatedTabs } from "../components/ui/animated-tabs";
 import { listingsAPI, favoritesAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import { cn } from "../lib/utils";
 import { DEFAULT_MAP_CENTER, PRICE_RANGE, SPACE_TYPES } from "../lib/constants";
 
 export default function Listings() {
@@ -20,6 +23,7 @@ export default function Listings() {
   const [error, setError] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isBlock } = useTheme();
 
   // Fetch listings from backend on mount
   useEffect(() => {
@@ -119,19 +123,19 @@ export default function Listings() {
   const filters = SPACE_TYPES;
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-neutral-950">
+    <div className={cn("h-screen flex flex-col", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-white dark:bg-neutral-950")}>
       <Navbar />
 
       <div className="flex-1 flex pt-20">
         {/* LEFT SIDE - LISTINGS */}
-        <div className="w-full lg:w-1/2 overflow-y-auto bg-white dark:bg-neutral-950">
+        <div className={cn("w-full lg:w-1/2 overflow-y-auto", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-white dark:bg-neutral-950")}>
           <div className="p-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              <h1 className={cn("mb-3", isBlock ? "text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight" : "text-4xl font-bold text-gray-900 dark:text-white")}>
                 Available Spaces
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400">
+              <p className={cn("text-lg", isBlock ? "text-slate-600 dark:text-gray-400 font-medium" : "text-gray-600 dark:text-gray-400")}>
                 {filteredListings.length} spaces available
               </p>
             </div>
@@ -141,7 +145,12 @@ export default function Listings() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:border-gray-900 dark:hover:border-neutral-600 transition"
+                className={cn(
+                  "px-4 py-2.5 transition",
+                  isBlock
+                    ? "bg-amber-300 dark:bg-neutral-800 border-2 border-slate-900 dark:border-neutral-700 text-slate-900 dark:text-white rounded-xl font-bold shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none"
+                    : "bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-gray-300 rounded-full font-bold hover:border-slate-300 dark:hover:border-neutral-600 shadow-sm"
+                )}
               >
                 <option value="default">Sort by: Default</option>
                 <option value="price-low">Price: Low to High</option>
@@ -150,46 +159,52 @@ export default function Listings() {
                 <option value="capacity-high">Capacity: High to Low</option>
               </select>
 
-              <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Price Range:</label>
-                <input
-                  type="number"
-                  value={priceRange[0]}
-                  onChange={(e) => {
-                    const newMin = parseInt(e.target.value) || 0;
-                    setPriceRange([newMin, Math.max(newMin, priceRange[1])]);
-                  }}
-                  className="w-20 border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium"
-                  min="0"
-                />
-                <span className="text-gray-400">-</span>
-                <input
-                  type="number"
-                  value={priceRange[1]}
-                  onChange={(e) => {
-                    const newMax = parseInt(e.target.value) || 0;
-                    setPriceRange([Math.min(priceRange[0], newMax), newMax]);
-                  }}
-                  className="w-20 border-0 p-0 focus:ring-0 text-gray-900 dark:text-white dark:bg-transparent font-medium"
-                  min="0"
-                />
+              <div className={cn(
+                "flex items-center gap-3 px-5 py-2.5 transition",
+                isBlock
+                  ? "bg-white dark:bg-neutral-900 border-2 border-slate-900 dark:border-neutral-700 rounded-xl shadow-[3px_3px_0px_0px_rgba(15,23,42,1)]"
+                  : "bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-full shadow-sm"
+              )}>
+                <label className={cn("whitespace-nowrap uppercase tracking-wider", isBlock ? "text-[11px] font-black text-slate-400 dark:text-gray-500" : "text-sm font-bold text-slate-500 dark:text-gray-400 text-[10px]")}>Price Range:</label>
+                <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-white">
+                  <span>₹</span>
+                  <input
+                    type="number"
+                    value={priceRange[0]}
+                    onChange={(e) => {
+                      const newMin = parseInt(e.target.value) || 0;
+                      setPriceRange([newMin, Math.max(newMin, priceRange[1])]);
+                    }}
+                    className="w-16 border-0 p-0 focus:ring-0 text-slate-900 dark:text-white dark:bg-transparent font-bold"
+                    min="0"
+                  />
+                  <span className="text-slate-300 dark:text-gray-600">-</span>
+                  <span>₹</span>
+                  <input
+                    type="number"
+                    value={priceRange[1]}
+                    onChange={(e) => {
+                      const newMax = parseInt(e.target.value) || 0;
+                      setPriceRange([Math.min(priceRange[0], newMax), newMax]);
+                    }}
+                    className="w-16 border-0 p-0 focus:ring-0 text-slate-900 dark:text-white dark:bg-transparent font-bold"
+                    min="0"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Filters */}
-            <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter)}
-                  className={`px-5 py-2.5 rounded-xl font-medium transition whitespace-nowrap ${activeFilter === filter
-                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                    : 'bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-neutral-500'
-                    }`}
-                >
-                  {filter === "All" ? "All Spaces" : filter}
-                </button>
-              ))}
+            <div className="mb-8">
+              <AnimatedTabs
+                tabs={[
+                  { label: "All Spaces", value: "All" },
+                  ...filters.map(f => ({ label: f, value: f }))
+                ]}
+                activeTab={activeFilter}
+                setActiveTab={setActiveFilter}
+                className="border-b border-slate-100 dark:border-neutral-800 pb-2"
+              />
             </div>
 
             {/* Listings Grid */}
@@ -205,7 +220,12 @@ export default function Listings() {
                   <p className="text-gray-500 dark:text-gray-400 mb-4">Make sure the backend server is running.</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition"
+                    className={cn(
+                      "px-6 py-3 transition",
+                      isBlock
+                        ? "bg-amber-300 text-slate-900 border-2 border-slate-900 rounded-xl font-black shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none"
+                        : "bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800"
+                    )}
                   >
                     Retry
                   </button>
@@ -231,7 +251,12 @@ export default function Listings() {
                       setPriceRange([0, 5000]);
                       setSortBy("default");
                     }}
-                    className="mt-4 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition"
+                    className={cn(
+                      "mt-4 px-6 py-3 transition",
+                      isBlock
+                        ? "bg-amber-300 text-slate-900 border-2 border-slate-900 rounded-xl font-black shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-none"
+                        : "bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800"
+                    )}
                   >
                     Clear Filters
                   </button>

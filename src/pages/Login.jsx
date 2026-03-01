@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import { cn } from "../lib/utils";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login, user } = useAuth();
+  const { isBlock } = useTheme();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -51,9 +54,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-neutral-950">
+    <div className={cn("min-h-screen flex", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-white dark:bg-neutral-950")}>
       {/* Left Side - Image */}
-      <div className="hidden lg:block lg:w-1/2 relative">
+      <div className={cn(
+        "hidden lg:block lg:w-1/2 relative",
+        isBlock ? "border-r-4 border-slate-900" : ""
+      )}>
         <img
           src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1200"
           alt="Classroom"
@@ -61,9 +67,9 @@ export default function Login() {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-gray-900/30"></div>
         <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="text-white max-w-md">
-            <h1 className="text-5xl font-bold mb-6">Welcome Back to EduSpace</h1>
-            <p className="text-xl text-gray-200">
+          <div className={cn("text-white max-w-md", isBlock ? "bg-amber-400 border-4 border-slate-900 p-8 rounded-xl shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]" : "")}>
+            <h1 className={cn("text-5xl mb-6", isBlock ? "font-black text-slate-900 uppercase tracking-tight" : "font-bold")}>Welcome Back to EduSpace</h1>
+            <p className={cn("text-xl", isBlock ? "font-bold text-slate-800" : "text-gray-200")}>
               Continue your journey to find the perfect learning space for your needs.
             </p>
           </div>
@@ -71,22 +77,22 @@ export default function Login() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-neutral-950">
+      <div className={cn("w-full lg:w-1/2 flex items-center justify-center p-8", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-white dark:bg-neutral-950")}>
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-12">
-            <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center">
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <div className={cn("w-12 h-12 flex items-center justify-center", isBlock ? "bg-amber-300 border-2 border-slate-900 rounded-xl shadow-[3px_3px_0px_0px_rgba(15,23,42,1)]" : "bg-gray-900 rounded-xl")}>
+              <svg className={cn("w-7 h-7", isBlock ? "text-slate-900" : "text-white")} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isBlock ? 2.5 : 2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">EduSpace</span>
+            <span className={cn("text-2xl", isBlock ? "font-black uppercase tracking-tight text-slate-900 dark:text-white" : "font-bold text-gray-900 dark:text-white")}>EduSpace</span>
           </Link>
 
           {/* Header */}
           <div className="mb-10">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">Sign In</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">Access your account</p>
+            <h2 className={cn("text-4xl mb-3", isBlock ? "font-black text-slate-900 dark:text-white uppercase tracking-tight" : "font-bold text-gray-900 dark:text-white")}>Sign In</h2>
+            <p className={cn("text-lg", isBlock ? "font-bold text-slate-600 dark:text-gray-400" : "text-gray-600 dark:text-gray-400")}>Access your account</p>
           </div>
 
           {/* Error Message */}
@@ -99,7 +105,7 @@ export default function Login() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+              <label htmlFor="email" className={cn("block text-sm mb-2", isBlock ? "font-black uppercase tracking-wide text-slate-900 dark:text-gray-200" : "font-semibold text-gray-900 dark:text-gray-200")}>
                 Email
               </label>
               <input
@@ -109,13 +115,18 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3.5 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
+                className={cn(
+                  "w-full px-4 py-3.5 transition disabled:opacity-50",
+                  isBlock
+                    ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                    : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
+                )}
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+              <label htmlFor="password" className={cn("block text-sm mb-2", isBlock ? "font-black uppercase tracking-wide text-slate-900 dark:text-gray-200" : "font-semibold text-gray-900 dark:text-gray-200")}>
                 Password
               </label>
               <div className="relative">
@@ -126,7 +137,12 @@ export default function Login() {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full px-4 py-3.5 pr-12 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 transition text-gray-900 dark:text-white bg-white dark:bg-neutral-900 disabled:opacity-50"
+                  className={cn(
+                    "w-full px-4 py-3.5 pr-12 transition disabled:opacity-50",
+                    isBlock
+                      ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-bold text-slate-900 dark:text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] focus:translate-y-[2px] focus:shadow-none focus:outline-none"
+                      : "border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 dark:focus:border-gray-400 text-gray-900 dark:text-white bg-white dark:bg-neutral-900"
+                  )}
                   placeholder="••••••••"
                 />
                 <button
@@ -150,16 +166,21 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center cursor-pointer">
+              <label className="flex items-center cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
+                  className={cn(
+                    "w-5 h-5 transition-all text-blue-600 outline-none focus:ring-0",
+                    isBlock
+                      ? "border-2 border-slate-900 rounded-md bg-white checked:bg-amber-400 checked:border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                      : "border-gray-300 rounded focus:ring-gray-900"
+                  )}
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Remember me</span>
+                <span className={cn("ml-3 text-sm transition-colors", isBlock ? "font-bold text-slate-900 dark:text-gray-200" : "text-gray-700 dark:text-gray-300")}>Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-gray-900 dark:text-white hover:underline font-medium">
+              <Link to="/forgot-password" className={cn("text-sm hover:underline", isBlock ? "font-black text-blue-600 dark:text-blue-400 uppercase" : "text-gray-900 dark:text-white font-medium")}>
                 Forgot password?
               </Link>
             </div>
@@ -167,7 +188,12 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className={cn(
+                "w-full py-4 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
+                isBlock
+                  ? "bg-amber-300 text-slate-900 border-4 border-slate-900 rounded-xl font-black text-lg uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[4px] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                  : "bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 shadow-md"
+              )}
             >
               {loading ? (
                 <>
@@ -197,7 +223,12 @@ export default function Login() {
           <div>
             <a
               href={`${import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api"}/auth/google`}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border border-gray-300 dark:border-neutral-700 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-900 transition"
+              className={cn(
+                "w-full flex items-center justify-center gap-3 px-4 py-3.5 transition",
+                isBlock
+                  ? "bg-white dark:bg-neutral-900 border-4 border-slate-900 rounded-xl font-black text-slate-900 dark:text-white uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:bg-slate-50"
+                  : "border border-gray-300 dark:border-neutral-700 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-900"
+              )}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -210,9 +241,9 @@ export default function Login() {
           </div>
 
           {/* Sign Up Link */}
-          <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
+          <p className={cn("text-center mt-8", isBlock ? "font-bold text-slate-700 dark:text-gray-300" : "text-gray-600 dark:text-gray-400")}>
             Don't have an account?{" "}
-            <Link to="/register" className="text-gray-900 dark:text-white hover:underline font-semibold">
+            <Link to="/register" className={cn("hover:underline", isBlock ? "font-black text-blue-600 dark:text-blue-400 uppercase ml-1" : "text-gray-900 dark:text-white font-semibold")}>
               Sign up
             </Link>
           </p>

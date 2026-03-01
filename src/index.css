@@ -8,11 +8,29 @@
   }
 
   body {
-    @apply antialiased bg-white dark:bg-neutral-950 text-gray-900 dark:text-gray-100;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
+    @apply antialiased scroll-smooth;
+  }
+
+  /* Block Theme Defaults */
+  .ui-block body {
+    @apply bg-[#FFFBEB] dark:bg-neutral-950 text-[#78350F] dark:text-gray-200;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .ui-block h1,
+  .ui-block h2,
+  .ui-block h3,
+  .ui-block h4,
+  .ui-block h5,
+  .ui-block h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* Soft Theme Defaults */
+  .ui-soft body {
+    @apply bg-slate-50 dark:bg-neutral-950 text-slate-800 dark:text-gray-200;
+    font-family: 'Outfit', sans-serif;
   }
 
   * {

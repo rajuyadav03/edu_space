@@ -1,0 +1,175 @@
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\config\cloudinary.js
+  7:17  error  'process' is not defined  no-undef
+  8:14  error  'process' is not defined  no-undef
+  9:17  error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\config\db.js
+  5:41  error  'process' is not defined  no-undef
+  9:5   error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\config\passport.js
+  18:10  error  'process' is not defined  no-undef
+  19:9   error  'process' is not defined  no-undef
+  27:27  error  'process' is not defined  no-undef
+  28:31  error  'process' is not defined  no-undef
+  29:30  error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\controllers\auth.controller.js
+    8:27  error  'process' is not defined  no-undef
+    9:16  error  'process' is not defined  no-undef
+  195:25  error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\controllers\upload.controller.js
+   6:45  error  'next' is defined but never used  no-unused-vars
+  16:21  error  'Buffer' is not defined           no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\middleware\auth.middleware.js
+  22:41  error  'process' is not defined           no-undef
+  35:14  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\seed.js
+   11:28  error  'process' is not defined  no-undef
+  146:5   error  'process' is not defined  no-undef
+  149:5   error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\server.js
+   38:3   error  'process' is not defined          no-undef
+  128:8   error  'process' is not defined          no-undef
+  128:40  error  'process' is not defined          no-undef
+  143:52  error  'process' is not defined          no-undef
+  144:20  error  'process' is not defined          no-undef
+  156:27  error  'process' is not defined          no-undef
+  161:27  error  'process' is not defined          no-undef
+  168:25  error  'next' is defined but never used  no-unused-vars
+  173:9   error  'process' is not defined          no-undef
+  185:14  error  'process' is not defined          no-undef
+  188:38  error  'process' is not defined          no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\backend\utils\email.js
+  11:19  error  'process' is not defined  no-undef
+  12:19  error  'process' is not defined  no-undef
+  26:30  error  'process' is not defined  no-undef
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\components\AddSpaceModal.jsx
+   1:31  error  'useRef' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  57:9   error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\components\SplashCursor.jsx
+  145:5  warning  Compilation Skipped: Inline `class` declarations are not supported
+
+Move class declarations outside of components/hooks.
+
+  143 |     }
+  144 |
+> 145 |     class Material {
+      |     ^^^^^^^^^^^^^^^^
+> 146 |       constructor(vertexShader, fragmentShaderSource) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 147 |         this.vertexShader = vertexShader;
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 168 |       }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 169 |     }
+      | ^^^^^^ Inline `class` declarations are not supported
+  170 |
+  171 |     class Program {
+  172 |       constructor(vertexShader, fragmentShader) {
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/unsupported-syntax
+  171:5  warning  Compilation Skipped: Inline `class` declarations are not supported
+
+Move class declarations outside of components/hooks.
+
+  169 |     }
+  170 |
+> 171 |     class Program {
+      |     ^^^^^^^^^^^^^^^
+> 172 |       constructor(vertexShader, fragmentShader) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 173 |         this.uniforms = {};
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 174 |         this.program = createProgram(vertexShader, fragmentShader);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 175 |         this.uniforms = getUniforms(this.program);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 176 |       }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 177 |       bind() {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 178 |         gl.useProgram(this.program);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 179 |       }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 180 |     }
+      | ^^^^^^ Inline `class` declarations are not supported
+  181 |
+  182 |     function createProgram(vertexShader, fragmentShader) {
+  183 |       let program = gl.createProgram();
+
+  react-hooks/unsupported-syntax
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\components\ui\floating-navbar.jsx
+  4:3  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\context\AuthContext.jsx
+   46:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                             react-refresh/only-export-components
+  191:3   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  206:5   warning  React Hook useMemo has missing dependencies: 'login', 'logout', 'persistAuthFromGoogle', 'refreshMe', 'register', and 'resetPassword'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\context\ThemeContext.jsx
+  5:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\AdminDashboard.jsx
+   22:11  error    'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                no-unused-vars
+   91:8   warning  React Hook useEffect has a missing dependency: 'user?.role'. Either include it or remove the dependency array                                           react-hooks/exhaustive-deps
+  101:8   warning  React Hook useEffect has missing dependencies: 'fetchTabData', 'isAuthenticated', and 'user?.role'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\ForgotPassword.jsx
+  25:18  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\GoogleCallback.jsx
+  17:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  15 |
+  16 |         if (errorMsg) {
+> 17 |             setError(decodeURIComponent(errorMsg));
+     |             ^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |             return;
+  19 |         }
+  20 |  react-hooks/set-state-in-effect
+  34:22  error    'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  40:8   warning  React Hook useEffect has missing dependencies: 'navigate', 'persistAuthFromGoogle', and 'searchParams'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\ListingDetails.jsx
+  55:16  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\Login.jsx
+  46:14  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\ProfilePage.jsx
+  11:19  error  'isAuthenticated' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\Register.jsx
+  56:14  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\ResetPassword.jsx
+   8:52  error  'autoLogin' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  53:18  error  'err' is defined but never used                                                            no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\SchoolDashboard.jsx
+  16:10  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Lenovo-PC\Desktop\college rent\src\pages\home.jsx
+  4:10  error  Parsing error: Identifier 'useState' has already been declared
+
+✖ 58 problems (51 errors, 7 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

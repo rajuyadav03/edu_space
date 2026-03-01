@@ -1,31 +1,42 @@
 /**
  * Skeleton loading components for better perceived performance
  */
+import { useTheme } from "../context/ThemeContext";
+import { cn } from "../lib/utils";
 
 export function ListingCardSkeleton() {
+  const { isBlock } = useTheme();
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 animate-pulse">
+    <div className={cn(
+      "overflow-hidden animate-pulse h-full",
+      isBlock
+        ? "bg-white dark:bg-neutral-900 rounded-2xl border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]"
+        : "bg-white dark:bg-neutral-900 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-sm"
+    )}>
       {/* Image skeleton */}
-      <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700" />
-      
+      <div className={cn(
+        "aspect-[4/3] bg-slate-100 dark:bg-neutral-800",
+        isBlock ? "border-b-4 border-slate-900" : ""
+      )} />
+
       {/* Content skeleton */}
-      <div className="p-5">
+      <div className="p-6">
         {/* Title */}
-        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded-lg w-3/4 mb-3" />
-        
+        <div className={cn("h-6 mb-4", isBlock ? "bg-amber-300 dark:bg-amber-900/50 rounded-md w-3/4 border-2 border-slate-900/10" : "bg-slate-200 dark:bg-neutral-700 rounded-full w-3/4")} />
+
         {/* Location */}
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/2 mb-4" />
-        
+        <div className={cn("h-4 mb-5", isBlock ? "bg-slate-200 dark:bg-neutral-800 rounded-sm w-1/2" : "bg-slate-200 dark:bg-neutral-700 rounded-full w-1/2")} />
+
         {/* Metadata */}
-        <div className="flex gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-16" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-20" />
+        <div className="flex gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-neutral-800">
+          <div className={cn("h-6 w-20", isBlock ? "bg-cyan-200 dark:bg-cyan-900/50 rounded-sm" : "bg-slate-200 dark:bg-neutral-700 rounded-full")} />
         </div>
-        
+
         {/* Price */}
         <div className="flex items-center justify-between">
-          <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded-lg w-24" />
-          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className={cn("h-7 w-24", isBlock ? "bg-slate-300 dark:bg-neutral-700 rounded-sm" : "bg-gray-200 dark:bg-gray-700 rounded-lg")} />
+          <div className={cn("w-10 h-10", isBlock ? "bg-slate-200 dark:bg-neutral-800 rounded-full border-2 border-slate-900/20" : "bg-gray-200 dark:bg-gray-700 rounded-full")} />
         </div>
       </div>
     </div>
