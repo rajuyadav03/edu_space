@@ -3,14 +3,20 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { useAuth } from "../context/AuthContext";
-import { User, Mail, Phone, Building2, MapPin, BookOpen, Award, Camera, Save, ArrowLeft } from "lucide-react";
+import { userAPI } from "../services/api";
+import { User, Mail, Phone, Building2, MapPin, BookOpen, Award, Camera, Save, ArrowLeft, ShieldCheck, Upload, X } from "lucide-react";
+import { uploadImageToCloudinary } from "../utils/uploadImage";
 
 export default function ProfilePage() {
-    const { user, isAuthenticated, authLoading } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
+    const [kycData, setKycData] = useState({ aadhaarNumber: "", panNumber: "", idDocumentUrl: "" });
+    const [kycSaving, setKycSaving] = useState(false);
+    const [kycUploading, setKycUploading] = useState(false);
+    const [kycMessage, setKycMessage] = useState({ type: "", text: "" });
     const [profile, setProfile] = useState({
         name: "",
         email: "",
@@ -23,10 +29,6 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
-        if (!authLoading && !isAuthenticated) {
-            navigate("/login");
-            return;
-        }
         if (user) {
             setProfile({
                 name: user.name || "",
@@ -40,9 +42,10 @@ export default function ProfilePage() {
             });
             setLoading(false);
         }
-    }, [user, isAuthenticated, authLoading, navigate]);
+    }, [user]);
 
     const handleSave = async (e) => {
+        // ... previous code
         e.preventDefault();
         setSaving(true);
         setMessage({ type: "", text: "" });
@@ -86,7 +89,64 @@ export default function ProfilePage() {
         }
     };
 
-    if (loading || authLoading) {
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Basic validation
+        if (!file.type.startsWith('image/')) {
+            setKycMessage({ type: "error", text: "Please select an image file" });
+            return;
+        }
+
+        try {
+            setKycUploading(true);
+            setKycMessage({ type: "", text: "" });
+            const url = await uploadImageToCloudinary(file);
+            setKycData(prev => ({ ...prev, idDocumentUrl: url }));
+        } catch (error) {
+            setKycMessage({ type: "error", text: error.message || "Failed to upload image. Check your internet connection or .env config." });
+        } finally {
+            setKycUploading(false);
+            // reset file input
+            e.target.value = '';
+        }
+    };
+
+    const handleKYCSubmit = async (e) => {
+        e.preventDefault();
+        setKycSaving(true);
+        setKycMessage({ type: "", text: "" });
+
+        try {
+            setKycSaving(true);
+            setKycMessage({ type: "", text: "" });
+
+            // ID document photo validation
+            if (!kycData.idDocumentUrl) {
+                setKycMessage({ type: "error", text: "Please upload your ID document photo first" });
+                setKycSaving(false);
+                return;
+            }
+
+            const res = await userAPI.submitKYC(kycData);
+            if (res.data.success) {
+                setKycMessage({ type: "success", text: res.data.message });
+                // Refresh page to update user data
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                setKycMessage({ type: "error", text: res.data.message || "Failed to submit KYC" });
+            }
+        } catch (err) {
+            const msg = err?.response?.data?.message || "Something went wrong. Please try again.";
+            setKycMessage({ type: "error", text: msg });
+        } finally {
+            setKycSaving(false);
+            setTimeout(() => setKycMessage({ type: "", text: "" }), 8000);
+        }
+    };
+
+    if (loading) {
         return (
             <div className="min-h-screen bg-white dark:bg-neutral-950">
                 <Navbar />
@@ -272,6 +332,172 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* KYC Verification (Teacher only) */}
+                        {isTeacher && (
+                            <div className={`rounded-2xl p-6 border ${user?.idVerificationStatus === 'verified'
+                                ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
+                                : user?.idVerificationStatus === 'pending'
+                                    ? 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800'
+                                    : user?.idVerificationStatus === 'rejected'
+                                        ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800'
+                                        : 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800'
+                                }`}>
+                                <div className="flex items-center justify-between mb-5">
+                                    <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4" />
+                                        ID Verification (KYC)
+                                    </h3>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${user?.idVerificationStatus === 'verified'
+                                        ? 'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200'
+                                        : user?.idVerificationStatus === 'pending'
+                                            ? 'bg-yellow-200 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200'
+                                            : user?.idVerificationStatus === 'rejected'
+                                                ? 'bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-200'
+                                                : 'bg-orange-200 text-orange-800 dark:bg-orange-800 dark:text-orange-200'
+                                        }`}>
+                                        {user?.idVerificationStatus === 'verified' ? '✅ Verified'
+                                            : user?.idVerificationStatus === 'pending' ? '⏳ Under Review'
+                                                : user?.idVerificationStatus === 'rejected' ? '❌ Rejected'
+                                                    : '⚠️ Not Submitted'}
+                                    </span>
+                                </div>
+
+                                {user?.idVerificationStatus === 'verified' ? (
+                                    <div className="text-sm text-green-700 dark:text-green-400">
+                                        <p className="font-medium">Your identity has been verified. You can book spaces.</p>
+                                        {user?.aadhaarLast4 && <p className="mt-2">Aadhaar: ●●●● ●●●● {user.aadhaarLast4}</p>}
+                                        {user?.panLast4 && <p className="mt-1">PAN: ●●●●●●{user.panLast4}</p>}
+                                    </div>
+                                ) : user?.idVerificationStatus === 'pending' ? (
+                                    <div className="text-sm text-yellow-700 dark:text-yellow-400">
+                                        <p className="font-medium">Your documents are being reviewed by an admin. This usually takes 24-48 hours.</p>
+                                        {user?.aadhaarLast4 && <p className="mt-2">Aadhaar submitted: ●●●● ●●●● {user.aadhaarLast4}</p>}
+                                        {user?.panLast4 && <p className="mt-1">PAN submitted: ●●●●●●{user.panLast4}</p>}
+                                    </div>
+                                ) : (
+                                    <>
+                                        {user?.idVerificationStatus === 'rejected' && (
+                                            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-700 dark:text-red-400">
+                                                <strong>Rejection Reason:</strong> {user?.idVerificationNote || 'No reason provided. Please resubmit with valid documents.'}
+                                            </div>
+                                        )}
+
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                            You must verify your identity to book spaces. Provide at least one government ID (Aadhaar or PAN).
+                                        </p>
+
+                                        {kycMessage.text && (
+                                            <div className={`mb-4 p-3 rounded-xl text-sm border ${kycMessage.type === "success"
+                                                ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300"
+                                                : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300"
+                                                }`}>
+                                                {kycMessage.type === "success" ? "✅" : "❌"} {kycMessage.text}
+                                            </div>
+                                        )}
+
+                                        <form onSubmit={handleKYCSubmit} className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                                    Aadhaar Number <span className="text-xs text-gray-400">(12 digits)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={kycData.aadhaarNumber}
+                                                    onChange={(e) => setKycData({ ...kycData, aadhaarNumber: e.target.value.replace(/\D/g, '').slice(0, 12) })}
+                                                    placeholder="e.g. 123456789012 (test)"
+                                                    maxLength={12}
+                                                    className="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 outline-none text-sm transition"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                                    PAN Number <span className="text-xs text-gray-400">(ABCDE1234F)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={kycData.panNumber}
+                                                    onChange={(e) => setKycData({ ...kycData, panNumber: e.target.value.toUpperCase().slice(0, 10) })}
+                                                    placeholder="e.g. ABCDE1234F (test)"
+                                                    maxLength={10}
+                                                    className="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 outline-none text-sm transition"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                                    ID Document Photo *
+                                                </label>
+
+                                                {kycData.idDocumentUrl ? (
+                                                    <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800">
+                                                        <img
+                                                            src={kycData.idDocumentUrl}
+                                                            alt="ID Document Preview"
+                                                            className="w-full h-full object-contain"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setKycData({ ...kycData, idDocumentUrl: "" })}
+                                                            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition ${kycUploading
+                                                        ? "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-neutral-800"
+                                                        : "border-gray-300 dark:border-gray-600 border-gray-400 dark:border-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                                                        }`}>
+                                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                            {kycUploading ? (
+                                                                <>
+                                                                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-orange-600 border-t-transparent mb-3" />
+                                                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Uploading to cloud...</p>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Upload className="w-8 h-8 text-gray-400 mb-3" />
+                                                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                                        Click to upload ID photo
+                                                                    </p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        JPG, PNG or GIF (Max 5MB)
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <input
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={handleImageUpload}
+                                                            disabled={kycUploading}
+                                                        />
+                                                    </label>
+                                                )}
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                disabled={kycSaving}
+                                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-semibold transition-all disabled:opacity-60"
+                                            >
+                                                {kycSaving ? (
+                                                    <>
+                                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                                                        Submitting...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ShieldCheck className="w-4 h-4" />
+                                                        Submit for Verification
+                                                    </>
+                                                )}
+                                            </button>
+                                        </form>
+                                    </>
+                                )}
                             </div>
                         )}
 

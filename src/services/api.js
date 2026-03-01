@@ -17,6 +17,26 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-logout on 401 responses (expired or invalid token)
+client.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      // Clear auth from both storages
+      localStorage.removeItem("eduSpaceToken");
+      localStorage.removeItem("eduSpaceUser");
+      sessionStorage.removeItem("eduSpaceToken");
+      sessionStorage.removeItem("eduSpaceUser");
+
+      // Redirect to login (only if not already there)
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const listingsAPI = {
   getAll: (params) => client.get("/listings", { params }),
   getOne: (id) => client.get(`/listings/${id}`),
@@ -32,7 +52,8 @@ export const bookingsAPI = {
   getRequests: () => client.get("/bookings/requests"),
   getOne: (id) => client.get(`/bookings/${id}`),
   updateStatus: (id, status) => client.put(`/bookings/${id}/status`, { status }),
-  cancel: (id) => client.put(`/bookings/${id}/cancel`)
+  cancel: (id) => client.put(`/bookings/${id}/cancel`),
+  resolveDeposit: (id, data) => client.put(`/bookings/${id}/deposit`, data)
 };
 
 export const adminAPI = {
@@ -48,7 +69,10 @@ export const adminAPI = {
 
 export const userAPI = {
   getProfile: () => client.get("/users/profile"),
-  updateProfile: (data) => client.put("/users/profile", data)
+  updateProfile: (data) => client.put("/users/profile", data),
+  submitKYC: (data) => client.put("/users/kyc", data),
+  getPendingKYC: () => client.get("/users/kyc/pending"),
+  verifyKYC: (userId, data) => client.put(`/users/kyc/${userId}/verify`, data)
 };
 
 export const favoritesAPI = {

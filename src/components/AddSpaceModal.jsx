@@ -6,6 +6,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { listingsAPI } from "../services/api";
+import { uploadImageToCloudinary } from "../utils/uploadImage";
 
 // Fix Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -57,6 +58,7 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -107,6 +109,32 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setError("");
+  };
+
+  const handleImageUpload = async (e, imageNumber) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError("Please select a valid image file");
+      return;
+    }
+
+    try {
+      setUploadingImage(imageNumber);
+      setError("");
+      const url = await uploadImageToCloudinary(file);
+      setFormData(prev => ({ ...prev, [`imageUrl${imageNumber}`]: url }));
+    } catch (err) {
+      setError(err.message || "Failed to upload image.");
+    } finally {
+      setUploadingImage(null);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const removeImage = (imageNumber) => {
+    setFormData(prev => ({ ...prev, [`imageUrl${imageNumber}`]: "" }));
   };
 
   const toggleAmenity = (amenity) => {
@@ -396,52 +424,68 @@ export default function AddSpaceModal({ isOpen, onClose, onSuccess }) {
                   </div>
                 </div>
 
-                {/* Image URLs */}
+                {/* Image Uploads */}
                 <div className="mt-5">
                   <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                    Image URLs <span className="font-normal text-gray-500">(Optional — up to 3 images)</span>
+                    Space Images <span className="font-normal text-gray-500">(Optional — up to 3 images)</span>
                   </label>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[1, 2, 3].map((num) => (
-                      <div key={num} className="flex items-start gap-2">
-                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0 mt-3">{num}</span>
-                        <div className="flex-1">
-                          <input
-                            type="url"
-                            name={`imageUrl${num}`}
-                            value={formData[`imageUrl${num}`]}
-                            onChange={handleChange}
-                            placeholder={num === 1 ? "Main image URL (paste a direct image link)" : `Image ${num} URL`}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-gray-900 transition text-sm"
-                          />
-                        </div>
-                        {/* Live image preview */}
-                        {formData[`imageUrl${num}`]?.trim() && (
-                          <div className="w-14 h-14 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 bg-gray-100 dark:bg-gray-700">
+                      <div key={num} className="flex flex-col gap-2 relative">
+                        {formData[`imageUrl${num}`]?.trim() ? (
+                          <div className="w-full aspect-[4/3] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 relative group">
                             <img
                               src={formData[`imageUrl${num}`].trim()}
-                              alt={`Preview ${num}`}
+                              alt={`Space ${num}`}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
                             />
-                            <div className="w-full h-full items-center justify-center text-red-500 text-xs text-center p-1" style={{ display: 'none' }}>
-                              Invalid URL
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeImage(num)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition shadow-lg"
+                              title="Remove image"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                            {num === 1 && (
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white text-[10px] uppercase font-bold text-center py-1">
+                                Main Photo
+                              </div>
+                            )}
                           </div>
+                        ) : (
+                          <label className={`w-full aspect-[4/3] flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition ${uploadingImage === num
+                              ? "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
+                              : "border-gray-300 dark:border-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            }`}>
+                            {uploadingImage === num ? (
+                              <div className="flex flex-col items-center">
+                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-900 dark:border-white border-t-transparent mb-2" />
+                                <span className="text-xs text-gray-500">Uploading...</span>
+                              </div>
+                            ) : (
+                              <>
+                                <svg className="w-6 h-6 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300 text-center px-2">
+                                  {num === 1 ? "Add Main Photo" : `Add Photo ${num}`}
+                                </span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, num)}
+                              disabled={uploadingImage === num}
+                            />
+                          </label>
                         )}
                       </div>
                     ))}
-                  </div>
-                  <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                    <p className="text-xs text-amber-700 dark:text-amber-400">
-                      <strong>Tip:</strong> Use <strong>direct image links</strong> (right-click image → "Copy image address"). URLs should look like: <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">https://images.unsplash.com/photo-...</code>
-                    </p>
-                    <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">
-                      ❌ Page links like <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">unsplash.com/photos/...</code> won't work — they are not direct image URLs.
-                    </p>
                   </div>
                 </div>
               </div>

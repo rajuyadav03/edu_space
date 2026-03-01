@@ -10,6 +10,7 @@ import ResetPassword from "./pages/ResetPassword";
 import GoogleCallback from "./pages/GoogleCallback";
 import NotFound from "./pages/NotFound";
 import EduSpaceLoader from "./components/EduSpaceLoader";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Lazy load pages for better initial page load
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
@@ -34,15 +35,16 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/auth/google/callback" element={<GoogleCallback />} />
-          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-          <Route path="/school-dashboard" element={<SchoolDashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/teacher-dashboard" element={<ProtectedRoute requiredRole="teacher"><TeacherDashboard /></ProtectedRoute>} />
+          <Route path="/school-dashboard" element={<ProtectedRoute requiredRole="school"><SchoolDashboard /></ProtectedRoute>} />
+          <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
   );
 }
+

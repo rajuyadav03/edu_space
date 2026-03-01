@@ -51,6 +51,9 @@ const seedData = async () => {
     ]);
 
     // Create teacher users
+    // TEST CREDENTIALS FOR KYC:
+    //   Aadhaar: 123456789012 (use in KYC form — only last 4 stored: 9012)
+    //   PAN:     ABCDE1234F   (use in KYC form — only last 4 stored: 234F)
     await User.create([
       {
         name: 'Rajesh Kumar',
@@ -59,7 +62,23 @@ const seedData = async () => {
         role: 'teacher',
         phone: '+91 9876543212',
         subject: 'Mathematics',
-        experience: 5
+        experience: 5,
+        // Pre-verified teacher (can book immediately)
+        aadhaarLast4: '9012',
+        panLast4: '234F',
+        idDocumentUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400',
+        idVerificationStatus: 'verified'
+      },
+      {
+        name: 'Priya Sharma',
+        email: 'priya@example.com',
+        password: 'password123',
+        role: 'teacher',
+        phone: '+91 9876543213',
+        subject: 'Science',
+        experience: 3,
+        // Not verified yet (use to test KYC submission flow)
+        idVerificationStatus: 'not_submitted'
       }
     ]);
 

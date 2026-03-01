@@ -67,6 +67,29 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     enum: ['cash', 'upi', 'card', 'bank_transfer'],
     default: 'cash'
+  },
+  // Security Deposit
+  securityDeposit: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  depositStatus: {
+    type: String,
+    enum: ['held', 'refunded', 'partially_deducted', 'fully_deducted'],
+    default: 'held'
+  },
+  depositDeductionAmount: {
+    type: Number,
+    default: 0
+  },
+  depositDeductionReason: {
+    type: String,
+    default: ''
+  },
+  termsAccepted: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

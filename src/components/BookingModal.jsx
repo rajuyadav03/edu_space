@@ -3,6 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { bookingsAPI } from "../services/api";
 
+// Security deposit amounts by space type (must match backend)
+const DEPOSIT_BY_SPACE_TYPE = {
+  'Classroom': 500,
+  'Laboratory': 2000,
+  'Auditorium': 3000,
+  'Sports Hall': 1500,
+  'Library': 1000,
+  'Conference Room': 1000
+};
+
 export default function BookingModal({ isOpen, onClose, listing }) {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -16,6 +26,7 @@ export default function BookingModal({ isOpen, onClose, listing }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -23,6 +34,7 @@ export default function BookingModal({ isOpen, onClose, listing }) {
       setFormData({ date: "", duration: "full", purpose: "", attendees: "" });
       setError("");
       setSuccess(false);
+      setTermsAccepted(false);
     }
   }, [isOpen]);
 
@@ -32,10 +44,11 @@ export default function BookingModal({ isOpen, onClose, listing }) {
     const multiplier = formData.duration === "half" ? 0.6 : 1;
     const price = Math.round(basePrice * multiplier);
     const serviceFee = Math.round(price * 0.1);
-    return { price, serviceFee, total: price + serviceFee };
+    const deposit = DEPOSIT_BY_SPACE_TYPE[listing?.spaceType] || 500;
+    return { price, serviceFee, total: price + serviceFee, deposit };
   };
 
-  const { price, serviceFee, total } = calculatePrice();
+  const { price, serviceFee, total, deposit } = calculatePrice();
 
   // Get minimum date (tomorrow)
   const getMinDate = () => {
@@ -70,6 +83,10 @@ export default function BookingModal({ isOpen, onClose, listing }) {
       setError(`Attendees cannot exceed capacity of ${listing?.capacity}`);
       return;
     }
+    if (!termsAccepted) {
+      setError("You must accept the terms and conditions");
+      return;
+    }
 
     setLoading(true);
 
@@ -85,7 +102,8 @@ export default function BookingModal({ isOpen, onClose, listing }) {
         timeSlot: timeSlot,
         purpose: formData.purpose,
         numberOfStudents: parseInt(formData.attendees),
-        specialRequirements: ""
+        specialRequirements: "",
+        termsAccepted: true
       };
 
       await bookingsAPI.create(payload);
@@ -187,6 +205,65 @@ export default function BookingModal({ isOpen, onClose, listing }) {
             >
               Got it
             </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Teacher not ID verified
+  if (user?.role === "teacher" && user?.idVerificationStatus !== "verified") {
+    return (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        />
+
+        <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">ID Verification Required</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-2">
+              You need to verify your identity before booking any space. This helps protect property owners.
+            </p>
+            {user?.idVerificationStatus === 'pending' && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 mb-4">
+                <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">⏳ Your ID is under review. You'll be able to book once an admin verifies it.</p>
+              </div>
+            )}
+            {user?.idVerificationStatus === 'rejected' && (
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-3 mb-4">
+                <p className="text-sm text-red-700 dark:text-red-400 font-medium">❌ Your ID was rejected{user?.idVerificationNote ? `: ${user.idVerificationNote}` : ''}. Please resubmit.</p>
+              </div>
+            )}
+            <div className="space-y-3 mt-6">
+              <Link
+                to="/profile"
+                className="block w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition text-center"
+              >
+                {user?.idVerificationStatus === 'not_submitted' ? 'Verify My ID' : 'Go to Profile'}
+              </Link>
+              <button
+                onClick={onClose}
+                className="w-full border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -352,8 +429,8 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                   onClick={() => setFormData({ ...formData, duration: "half" })}
                   disabled={loading}
                   className={`p-4 border-2 rounded-xl transition text-left ${formData.duration === "half"
-                      ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
-                      : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
+                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
+                    : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
                     }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-white">Half Day</div>
@@ -367,8 +444,8 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                   onClick={() => setFormData({ ...formData, duration: "full" })}
                   disabled={loading}
                   className={`p-4 border-2 rounded-xl transition text-left ${formData.duration === "full"
-                      ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
-                      : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
+                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700"
+                    : "border-gray-200 dark:border-gray-600 hover:border-gray-400"
                     }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-white">Full Day</div>
@@ -429,11 +506,40 @@ export default function BookingModal({ isOpen, onClose, listing }) {
                 <span>Service fee</span>
                 <span>₹{serviceFee}</span>
               </div>
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Security deposit <span className="text-xs">(refundable)</span></span>
+                <span>₹{deposit}</span>
+              </div>
               <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-700">
                 <span>Total</span>
-                <span>₹{total}</span>
+                <span>₹{total + deposit}</span>
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Includes ₹{deposit} refundable security deposit
+              </p>
             </div>
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="mt-5 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => { setTermsAccepted(e.target.checked); setError(""); }}
+                disabled={loading}
+                className="mt-1 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-gray-900 focus:ring-gray-900 dark:focus:ring-gray-400 flex-shrink-0"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                I accept the <strong>Terms & Conditions</strong>. I understand that:
+                <ul className="mt-1 ml-4 list-disc text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
+                  <li>I am responsible for any damage to the property during my booking</li>
+                  <li>The security deposit (₹{deposit}) may be deducted partially or fully for damages</li>
+                  <li>My verified ID details will be shared with the space owner</li>
+                  <li>False bookings may result in account suspension</li>
+                </ul>
+              </span>
+            </label>
           </div>
 
           {/* Submit Button */}

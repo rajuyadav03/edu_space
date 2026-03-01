@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { bookingsAPI, favoritesAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function TeacherDashboard() {
-  const navigate = useNavigate();
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,12 +17,7 @@ export default function TeacherDashboard() {
   const [favorites, setFavorites] = useState([]);
   const [favLoading, setFavLoading] = useState(false);
 
-  // Redirect if not authenticated or not a teacher
-  useEffect(() => {
-    if (!authLoading && (!isAuthenticated || user?.role !== "teacher")) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, authLoading, user, navigate]);
+
 
   // Fetch bookings
   useEffect(() => {
@@ -43,10 +37,10 @@ export default function TeacherDashboard() {
       }
     };
 
-    if (isAuthenticated && !authLoading) {
+    if (isAuthenticated) {
       fetchBookings();
     }
-  }, [isAuthenticated, authLoading, user]);
+  }, [isAuthenticated, user]);
 
   const handleCancelBooking = async (bookingId) => {
     try {
@@ -72,20 +66,7 @@ export default function TeacherDashboard() {
     totalSpent: bookings.reduce((sum, b) => sum + (b.price || b.listing?.price || 0), 0)
   };
 
-  if (authLoading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-gray-50 dark:bg-neutral-950">
-          <svg className="animate-spin h-12 w-12 text-gray-900 dark:text-white" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-        </div>
-        <Footer />
-      </>
-    );
-  }
+
 
   return (
     <>

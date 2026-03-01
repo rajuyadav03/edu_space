@@ -66,7 +66,8 @@ export const register = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        phone: user.phone
+        phone: user.phone,
+        idVerificationStatus: user.idVerificationStatus
       }
     });
   } catch (error) {
@@ -129,7 +130,16 @@ export const login = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        phone: user.phone
+        phone: user.phone,
+        avatar: user.avatar,
+        schoolName: user.schoolName,
+        address: user.address,
+        subject: user.subject,
+        experience: user.experience,
+        idVerificationStatus: user.idVerificationStatus,
+        aadhaarLast4: user.aadhaarLast4,
+        panLast4: user.panLast4,
+        idVerificationNote: user.idVerificationNote
       }
     });
   } catch (error) {
@@ -252,7 +262,16 @@ export const resetPassword = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        phone: user.phone
+        phone: user.phone,
+        avatar: user.avatar,
+        schoolName: user.schoolName,
+        address: user.address,
+        subject: user.subject,
+        experience: user.experience,
+        idVerificationStatus: user.idVerificationStatus,
+        aadhaarLast4: user.aadhaarLast4,
+        panLast4: user.panLast4,
+        idVerificationNote: user.idVerificationNote
       }
     });
   } catch (error) {

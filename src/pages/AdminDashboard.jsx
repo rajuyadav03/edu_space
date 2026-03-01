@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { adminAPI } from "../services/api";
+import { adminAPI, userAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import {
     LayoutDashboard, Users, Building2, CalendarCheck,
     Search, Trash2, ChevronDown, TrendingUp, IndianRupee,
-    AlertCircle, RefreshCw, Shield
+    AlertCircle, RefreshCw, Shield, ShieldCheck, ExternalLink, Check, X
 } from "lucide-react";
 
 const STATUS_COLORS = {
@@ -20,7 +20,7 @@ const STATUS_COLORS = {
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated } = useAuth();
 
     const [activeTab, setActiveTab] = useState("overview");
     const [loading, setLoading] = useState(true);
@@ -33,6 +33,7 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [listings, setListings] = useState([]);
     const [bookings, setBookings] = useState([]);
+    const [kycUsers, setKycUsers] = useState([]);
 
     // Filter/search states
     const [userSearch, setUserSearch] = useState("");
@@ -47,12 +48,7 @@ export default function AdminDashboard() {
     const filtersRef = useRef({ userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter });
     filtersRef.current = { userSearch, userRoleFilter, listingSearch, bookingSearch, bookingStatusFilter };
 
-    // Auth guard
-    useEffect(() => {
-        if (!authLoading && (!isAuthenticated || user?.role !== "admin")) {
-            navigate("/login");
-        }
-    }, [isAuthenticated, authLoading, user, navigate]);
+
 
     // Fetch data based on active tab (stable — doesn't depend on search/filter values)
     const fetchTabData = useCallback(async () => {
@@ -75,6 +71,9 @@ export default function AdminDashboard() {
             } else if (activeTab === "bookings") {
                 const res = await adminAPI.getBookings({ search: f.bookingSearch, status: f.bookingStatusFilter });
                 setBookings(res.data.bookings || []);
+            } else if (activeTab === "kyc") {
+                const res = await userAPI.getPendingKYC();
+                setKycUsers(res.data.users || []);
             }
         } catch (err) {
             console.error("Admin fetch error:", err);
@@ -86,15 +85,15 @@ export default function AdminDashboard() {
 
     // Fetch on tab change or initial load
     useEffect(() => {
-        if (isAuthenticated && !authLoading && user?.role === "admin") {
+        if (isAuthenticated && user?.role === "admin") {
             fetchTabData();
         }
-    }, [fetchTabData, isAuthenticated, authLoading]);
+    }, [fetchTabData, isAuthenticated]);
 
     // Debounced search — waits 500ms after last keystroke before fetching
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (isAuthenticated && !authLoading && user?.role === "admin") {
+            if (isAuthenticated && user?.role === "admin") {
                 fetchTabData();
             }
         }, 500);
@@ -162,19 +161,33 @@ export default function AdminDashboard() {
         }
     };
 
-    if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600" />
-            </div>
-        );
-    }
+    const handleVerifyKYC = async (userId, status) => {
+        let note = '';
+        if (status === 'rejected') {
+            note = window.prompt('Enter reason for rejection:');
+            if (!note) return; // cancelled or empty
+        }
+        if (status === 'verified' && !window.confirm('Approve this teacher\'s identity verification?')) return;
+        try {
+            setActionLoading(userId);
+            await userAPI.verifyKYC(userId, { status, note });
+            setKycUsers(prev => prev.filter(u => status === 'verified' ? u._id !== userId : true).map(u => u._id === userId ? { ...u, idVerificationStatus: status, idVerificationNote: note } : u));
+            showSuccess(`KYC ${status} successfully`);
+        } catch (err) {
+            setError(err.response?.data?.message || `Failed to ${status} KYC`);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+
 
     const tabs = [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "users", label: "Users", icon: Users },
         { id: "listings", label: "Listings", icon: Building2 },
-        { id: "bookings", label: "Bookings", icon: CalendarCheck }
+        { id: "bookings", label: "Bookings", icon: CalendarCheck },
+        { id: "kyc", label: "KYC Verify", icon: ShieldCheck }
     ];
 
     const formatDate = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -258,6 +271,12 @@ export default function AdminDashboard() {
                         statusFilter={bookingStatusFilter} setStatusFilter={setBookingStatusFilter}
                         onUpdateStatus={handleUpdateBookingStatus} onDelete={handleDeleteBooking}
                         actionLoading={actionLoading} formatCurrency={formatCurrency} formatDate={formatDate}
+                    />
+                )}
+                {activeTab === "kyc" && (
+                    <KYCTab
+                        users={kycUsers} loading={loading}
+                        onVerify={handleVerifyKYC} actionLoading={actionLoading} formatDate={formatDate}
                     />
                 )}
             </div>
@@ -576,6 +595,107 @@ function BookingsTab({ bookings, loading, search, setSearch, statusFilter, setSt
                 )}
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 text-right">{bookings.length} booking(s)</p>
+        </div>
+    );
+}
+
+/* ============ KYC TAB ============ */
+function KYCTab({ users, loading, onVerify, actionLoading, formatDate }) {
+    const KYC_STATUS_COLORS = {
+        pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        rejected: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-sm overflow-hidden">
+                {loading ? <LoadingSkeleton rows={5} /> : users.length === 0 ? (
+                    <div className="text-center py-16">
+                        <ShieldCheck className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                        <p className="text-gray-600 dark:text-gray-400 font-medium">All caught up!</p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">No pending KYC submissions</p>
+                    </div>
+                ) : (
+                    <div className="divide-y divide-gray-100 dark:divide-neutral-800">
+                        {users.map(u => (
+                            <div key={u._id} className="p-5 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                    {/* User Info */}
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+                                                {u.name?.[0]?.toUpperCase() || '?'}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900 dark:text-white">{u.name}</h4>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{u.email} • {u.phone || 'No phone'}</p>
+                                            </div>
+                                            <span className={`ml-auto px-2.5 py-1 rounded-lg text-xs font-medium ${KYC_STATUS_COLORS[u.idVerificationStatus] || KYC_STATUS_COLORS.pending}`}>
+                                                {u.idVerificationStatus}
+                                            </span>
+                                        </div>
+
+                                        {/* ID Info */}
+                                        <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mt-3">
+                                            {u.aadhaarLast4 && (
+                                                <span className="flex items-center gap-1">
+                                                    <span className="font-medium">Aadhaar:</span> ●●●● ●●●● {u.aadhaarLast4}
+                                                </span>
+                                            )}
+                                            {u.panLast4 && (
+                                                <span className="flex items-center gap-1">
+                                                    <span className="font-medium">PAN:</span> ●●●●●●{u.panLast4}
+                                                </span>
+                                            )}
+                                            <span className="text-xs text-gray-400">Joined: {formatDate(u.createdAt)}</span>
+                                        </div>
+
+                                        {/* Document Link */}
+                                        {u.idDocumentUrl && (
+                                            <a
+                                                href={u.idDocumentUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-lg text-xs font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition"
+                                            >
+                                                <ExternalLink className="w-3.5 h-3.5" />
+                                                View ID Document
+                                            </a>
+                                        )}
+
+                                        {u.idVerificationNote && (
+                                            <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                                                Previous rejection: {u.idVerificationNote}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex gap-2 sm:flex-col">
+                                        <button
+                                            onClick={() => onVerify(u._id, 'verified')}
+                                            disabled={actionLoading === u._id}
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition disabled:opacity-50"
+                                        >
+                                            {actionLoading === u._id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                            Approve
+                                        </button>
+                                        <button
+                                            onClick={() => onVerify(u._id, 'rejected')}
+                                            disabled={actionLoading === u._id}
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition disabled:opacity-50"
+                                        >
+                                            {actionLoading === u._id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-right">{users.length} submission(s)</p>
         </div>
     );
 }

@@ -5,7 +5,8 @@ import {
   getBookingRequests,
   updateBookingStatus,
   cancelBooking,
-  getBooking
+  getBooking,
+  resolveDeposit
 } from '../controllers/booking.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 
@@ -17,5 +18,7 @@ router.get('/requests', protect, authorize('school'), getBookingRequests);
 router.get('/:id', protect, getBooking);
 router.put('/:id/status', protect, authorize('school'), updateBookingStatus);
 router.put('/:id/cancel', protect, authorize('teacher'), cancelBooking);
+router.put('/:id/deposit', protect, authorize('school'), resolveDeposit);
 
 export default router;
+

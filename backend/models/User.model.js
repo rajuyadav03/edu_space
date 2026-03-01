@@ -53,6 +53,30 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // KYC / Identity Verification fields (teacher)
+  aadhaarLast4: {
+    type: String,
+    default: '',
+    match: [/^(\d{4})?$/, 'Must be last 4 digits of Aadhaar']
+  },
+  panLast4: {
+    type: String,
+    default: '',
+    match: [/^([A-Z0-9]{4})?$/, 'Must be last 4 characters of PAN']
+  },
+  idDocumentUrl: {
+    type: String,
+    default: ''
+  },
+  idVerificationStatus: {
+    type: String,
+    enum: ['not_submitted', 'pending', 'verified', 'rejected'],
+    default: 'not_submitted'
+  },
+  idVerificationNote: {
+    type: String,
+    default: ''
+  },
   // Common fields
   avatar: {
     type: String,
