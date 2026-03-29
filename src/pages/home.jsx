@@ -10,6 +10,7 @@ import { cn } from "../lib/utils";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { API_BASE_URL } from "../lib/constants";
+import SEO from '../components/SEO';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ export default function Home() {
 
   return (
     <div className={cn("min-h-screen", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-slate-50 dark:bg-neutral-950")}>
+      <SEO title="Home" description="Find and book classrooms, labs, and auditoriums from top schools and colleges for tuition, training, and events." />
       <Navbar />
 
       {/* Hero Section */}

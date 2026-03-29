@@ -1,6 +1,8 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.model.js';
+import env from './env.js';
+import logger from '../utils/logger.js';
 
 /**
  * Configure Google OAuth 2.0 Strategy
@@ -15,18 +17,18 @@ import User from '../models/User.model.js';
  */
 const configurePassport = () => {
     // Only configure if credentials are provided
-    if (!process.env.GOOGLE_CLIENT_ID ||
-        process.env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
-        console.log('⚠️  Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env');
+    if (!env.GOOGLE_CLIENT_ID ||
+        env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
+        logger.warn('⚠️  Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env');
         return;
     }
 
     passport.use(
         new GoogleStrategy(
             {
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/auth/google/callback',
+                clientID: env.GOOGLE_CLIENT_ID,
+                clientSecret: env.GOOGLE_CLIENT_SECRET,
+                callbackURL: env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/auth/google/callback',
                 scope: ['profile', 'email']
             },
             async (accessToken, refreshToken, profile, done) => {

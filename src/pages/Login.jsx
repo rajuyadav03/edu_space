@@ -5,8 +5,10 @@ import { useTheme } from "../context/ThemeContext";
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Quote, Star, CheckCircle2 } from "lucide-react";
+import EduSpaceLoader from '../components/EduSpaceLoader';
+import SEO from '../components/SEO';
 
-export default function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
   const { isBlock } = useTheme();
@@ -66,7 +68,12 @@ export default function Login() {
   };
 
   return (
-    <div className={cn("min-h-screen flex", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-slate-50 dark:bg-neutral-950")}>
+    <div className={cn(
+      "min-h-screen flex transition-colors duration-500",
+      isBlock ? "bg-slate-50" : "bg-neutral-50 dark:bg-neutral-900"
+    )}>
+      <SEO title="Login" description="Sign in to your EduSpace account." />
+
       {/* Left Side - Visual Content */}
       <div className={cn("hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden", isBlock ? "bg-amber-400 border-r-4 border-slate-900" : "bg-gradient-to-br from-blue-600 to-indigo-700")}>
         {isBlock ? (
@@ -317,3 +324,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;

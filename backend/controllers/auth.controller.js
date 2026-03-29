@@ -2,11 +2,13 @@ import User from '../models/User.model.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sendPasswordResetEmail } from '../utils/email.js';
+import env from '../config/env.js';
+import logger from '../utils/logger.js';
 
 // Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+  return jwt.sign({ id }, env.JWT_SECRET, {
+    expiresIn: env.JWT_EXPIRE
   });
 };
 
@@ -192,7 +194,7 @@ export const forgotPassword = async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     // Build reset URL (frontend URL)
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = env.CLIENT_URL || 'http://localhost:5173';
     const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
     try {
@@ -208,7 +210,7 @@ export const forgotPassword = async (req, res, next) => {
       user.resetPasswordExpire = undefined;
       await user.save({ validateBeforeSave: false });
 
-      console.error('Email send error:', emailError);
+      logger.error('Email send error:', emailError);
       return res.status(500).json({
         success: false,
         message: 'Email could not be sent. Please try again later.'

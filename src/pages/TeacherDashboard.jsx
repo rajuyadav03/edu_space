@@ -4,6 +4,7 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { bookingsAPI, favoritesAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import SEO from '../components/SEO';
 
 export default function TeacherDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -71,6 +72,7 @@ export default function TeacherDashboard() {
   return (
     <>
       <Navbar />
+      <SEO title="Teacher Dashboard" />
 
       <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 pt-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
@@ -148,30 +150,30 @@ export default function TeacherDashboard() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("bookings")}
-                  className={`py-4 border-b-2 font-semibold transition ${activeTab === "bookings"
-                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`}
+                  className={`py - 4 border - b - 2 font - semibold transition ${activeTab === "bookings"
+                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    } `}
                 >
                   My Bookings
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("favorites")}
-                  className={`py-4 border-b-2 font-medium transition ${activeTab === "favorites"
-                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`}
+                  className={`py - 4 border - b - 2 font - medium transition ${activeTab === "favorites"
+                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    } `}
                 >
                   Favorites
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("profile")}
-                  className={`py-4 border-b-2 font-medium transition ${activeTab === "profile"
-                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`}
+                  className={`py - 4 border - b - 2 font - medium transition ${activeTab === "profile"
+                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    } `}
                 >
                   Profile
                 </button>
@@ -239,12 +241,12 @@ export default function TeacherDashboard() {
                                   {booking.listing?.location || booking.location}
                                 </p>
                               </div>
-                              <span className={`px-4 py-2 rounded-full text-sm font-semibold ${booking.status === 'confirmed' || booking.status === 'Confirmed'
-                                ? 'bg-green-100 text-green-700'
-                                : booking.status === 'rejected' || booking.status === 'Rejected'
-                                  ? 'bg-red-100 text-red-700'
-                                  : 'bg-yellow-100 text-yellow-700'
-                                }`}>
+                              <span className={`px - 4 py - 2 rounded - full text - sm font - semibold ${booking.status === 'confirmed' || booking.status === 'Confirmed'
+                                  ? 'bg-green-100 text-green-700'
+                                  : booking.status === 'rejected' || booking.status === 'Rejected'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                                } `}>
                                 {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown'}
                               </span>
                             </div>
@@ -269,7 +271,7 @@ export default function TeacherDashboard() {
 
                             <div className="flex gap-3">
                               <Link
-                                to={`/listing/${booking.listing?._id || booking.listing}`}
+                                to={`/ listing / ${booking.listing?._id || booking.listing} `}
                                 className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition"
                               >
                                 View Details
@@ -429,7 +431,7 @@ function FavoritesTab({ favorites, setFavorites, favLoading, setFavLoading, isAu
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {favorites.map((listing) => (
         <div key={listing._id || listing.id} className="bg-gray-50 dark:bg-neutral-900/50 rounded-2xl overflow-hidden border border-gray-100 dark:border-neutral-800 hover:shadow-lg transition group">
-          <Link to={`/listing/${listing._id || listing.id}`} className="block">
+          <Link to={`/ listing / ${listing._id || listing.id} `} className="block">
             <div className="relative aspect-[4/3] overflow-hidden">
               <img
                 src={listing.images?.[0] || listing.image || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800"}

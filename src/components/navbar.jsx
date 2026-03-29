@@ -43,10 +43,12 @@ export default function Navbar() {
         <div className={cn("flex items-center justify-between transition-all", isBlock && "mx-4 mt-4 px-5 py-4 bg-white dark:bg-neutral-900 border-2 border-slate-900 dark:border-neutral-700 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]")}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center border-2 border-slate-900 group-hover:-translate-y-1 group-hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all duration-200">
+            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center border-2 border-slate-900 group-hover:-translate-y-1 group-hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all duration-200 relative">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 14l9-5-9-5-9 5 9 5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <svg className="absolute w-3 h-3 -top-0.5 -right-0.5 text-amber-300 logo-spark" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14l-6-4.8h7.6z" />
               </svg>
             </div>
             <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">

@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import AddSpaceModal from "../components/AddSpaceModal";
+import { Building2, Users, Calendar, DollarSign, Plus, Edit, Trash2, MapPin, Image as ImageIcon, Map } from 'lucide-react';
+import CreateListingModal from '../components/CreateListingModal';
+import SEO from '../components/SEO';
 import { listingsAPI, bookingsAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -75,6 +78,7 @@ export default function SchoolDashboard() {
 
   return (
     <>
+      <SEO title="Facility Dashboard" />
       <Navbar />
 
       <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 pt-20">

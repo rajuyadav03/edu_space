@@ -1,17 +1,18 @@
 import nodemailer from 'nodemailer';
+import env from '../config/env.js';
 
 /**
  * Create reusable transporter using Gmail SMTP
  * For production, use a dedicated email service (SendGrid, Resend, AWS SES)
  */
 const createTransporter = () => {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.SMTP_EMAIL,
-            pass: process.env.SMTP_PASSWORD
-        }
-    });
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: env.SMTP_EMAIL,
+      pass: env.SMTP_PASSWORD
+    }
+  });
 };
 
 /**
@@ -20,13 +21,12 @@ const createTransporter = () => {
  * @param {string} resetUrl - Password reset URL
  */
 export const sendPasswordResetEmail = async (to, resetUrl) => {
-    const transporter = createTransporter();
+  const transporter = createTransporter();
 
-    const mailOptions = {
-        from: `"EduSpace" <${process.env.SMTP_EMAIL}>`,
-        to,
-        subject: 'EduSpace - Password Reset Request',
-        html: `
+  const mailOptions = {
+    from: `"EduSpace" <${env.SMTP_EMAIL}>`, to,
+    subject: 'EduSpace - Password Reset Request',
+    html: `
       <div style="max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
           <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">EduSpace</h1>
@@ -63,9 +63,9 @@ export const sendPasswordResetEmail = async (to, resetUrl) => {
         </div>
       </div>
     `
-    };
+  };
 
-    await transporter.sendMail(mailOptions);
+  await transporter.sendMail(mailOptions);
 };
 
 export default { sendPasswordResetEmail };

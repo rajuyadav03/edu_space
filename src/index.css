@@ -494,3 +494,146 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     content: '...';
   }
 }
+
+/* ========================================
+   MICRO-INTERACTIONS
+   Subtle polish for a premium feel
+   ======================================== */
+
+/* Button press effect — scale down on active */
+button,
+a[role="button"],
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+button:active,
+a[role="button"]:active,
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Hover underline slide-in for footer / nav links */
+.hover-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* Card entrance — fade + slide up */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-entrance {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggerable via inline style: animation-delay */
+.card-entrance:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.card-entrance:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.card-entrance:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.card-entrance:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.card-entrance:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.card-entrance:nth-child(6) {
+  animation-delay: 300ms;
+}
+
+/* Smooth focus ring transition instead of abrupt ring */
+*:focus-visible {
+  transition: box-shadow 0.2s ease;
+}
+
+/* Magnetic hover for CTA buttons */
+.cta-magnetic {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+}
+
+.cta-magnetic:hover {
+  transform: translateY(-2px);
+}
+
+.cta-magnetic:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Logo spark twinkle animation */
+@keyframes sparkTwinkle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.logo-spark {
+  animation: sparkTwinkle 2.5s ease-in-out infinite;
+}
+
+/* ========================================
+   REDUCED MOTION — accessibility
+   ======================================== */
+/* @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-entrance {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .logo-spark {
+    animation: none;
+  }
+} */

@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Quote, Star, CheckCircle2, User, Phone, Building } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Zap, HeartHandshake, User, GraduationCap, Building2, MapPin, BookOpen, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -76,8 +77,13 @@ export default function Register() {
   };
 
   return (
-    <div className={cn("min-h-screen flex", isBlock ? "bg-[#FFFBEB] dark:bg-neutral-950" : "bg-slate-50 dark:bg-neutral-950")}>
-      {/* Left Side - Visual Content (Exactly like Login) */}
+    <div className={cn(
+      "min-h-screen flex transition-colors duration-500",
+      isSoft ? "bg-slate-50" : "bg-neutral-50 dark:bg-neutral-900"
+    )}>
+      <SEO title="Create Account" description="Join EduSpace to rent or list educational spaces." />
+
+      {/* Left Column: Visual Content */}
       <div className={cn("hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden", isBlock ? "bg-blue-500 border-r-4 border-slate-900" : "bg-gradient-to-br from-indigo-600 to-purple-700")}>
         {isBlock ? (
           // Brutalist Design

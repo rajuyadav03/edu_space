@@ -11,7 +11,8 @@ import connectDB from './config/db.js';
 import configurePassport from './config/passport.js';
 
 // Load environment variables
-dotenv.config();
+import env from './config/env.js';
+import logger from './utils/logger.js';
 
 // Connect to MongoDB
 connectDB();
@@ -35,7 +36,7 @@ app.use(limiter);
 
 // CORS configuration for development and production
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
@@ -125,7 +126,7 @@ app.use(passport.initialize());
 // Google OAuth Routes
 // GET /api/auth/google - Redirect to Google consent screen
 app.get('/api/auth/google', (req, res, next) => {
-  if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
+  if (!env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
     return res.status(503).json({
       success: false,
       message: 'Google OAuth is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env'
@@ -140,8 +141,8 @@ app.get('/api/auth/google/callback',
   (req, res) => {
     try {
       // Generate JWT token
-      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
+      const token = jwt.sign({ id: req.user._id }, env.JWT_SECRET, {
+        expiresIn: env.JWT_EXPIRE
       });
 
       const user = {
@@ -153,12 +154,12 @@ app.get('/api/auth/google/callback',
       };
 
       // Redirect to frontend callback page with token and user data
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = env.CLIENT_URL || 'http://localhost:5173';
       const userStr = encodeURIComponent(JSON.stringify(user));
       res.redirect(`${frontendUrl}/auth/google/callback?token=${token}&user=${userStr}`);
     } catch (error) {
-      console.error('Google callback error:', error);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      logger.error('Google callback error:', error);
+      const frontendUrl = env.CLIENT_URL || 'http://localhost:5173';
       res.redirect(`${frontendUrl}/auth/google/callback?error=${encodeURIComponent('Authentication failed')}`);
     }
   }
@@ -166,11 +167,11 @@ app.get('/api/auth/google/callback',
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(env.isDev && { stack: err.stack })
   });
 });
 
@@ -182,8 +183,8 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  logger.info(`✅ Server running in ${env.NODE_ENV} mode on port ${PORT}`);
 });
