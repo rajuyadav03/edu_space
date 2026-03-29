@@ -31,3 +31,5 @@ backend/.env
 # Agent
 .agent/
 .gemini/
+.agents
+.%TEMP%
