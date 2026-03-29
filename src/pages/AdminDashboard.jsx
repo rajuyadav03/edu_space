@@ -216,7 +216,7 @@ export default function AdminDashboard() {
                         onClick={fetchTabData}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition shadow-sm"
                     >
-                        <RefreshCw className={`w - 4 h - 4 ${loading ? 'animate-spin' : ''} `} />
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
                     </button>
                 </div>
@@ -241,10 +241,10 @@ export default function AdminDashboard() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items - center gap - 2 px - 4 py - 2.5 rounded - xl text - sm font - medium transition - all whitespace - nowrap ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${activeTab === tab.id
                                     ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md"
                                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
-                                } `}
+                                }`}
                         >
                             <tab.icon className="w-4 h-4" />
                             {tab.label}
@@ -310,9 +310,9 @@ function OverviewTab({ stats, recentBookings, loading, formatCurrency, formatDat
             {/* Stat Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {statCards.map((card, i) => (
-                    <div key={i} className={`relative overflow - hidden bg - white dark: bg - neutral - 900 rounded - 2xl border border - gray - 100 dark: border - neutral - 800 p - 5 shadow - lg ${card.shadow} hover: scale - [1.02] transition - transform`}>
-                        <div className={`absolute top - 0 right - 0 w - 20 h - 20 bg - gradient - to - br ${card.gradient} opacity - 10 rounded - bl - [40px]`} />
-                        <div className={`w - 10 h - 10 bg - gradient - to - br ${card.gradient} rounded - xl flex items - center justify - center mb - 3 shadow - md`}>
+                    <div key={i} className={`relative overflow-hidden bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 p-5 shadow-lg ${card.shadow} hover:scale-[1.02] transition-transform`}>
+                        <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${card.gradient} opacity-10 rounded-bl-[40px]`} />
+                        <div className={`w-10 h-10 bg-gradient-to-br ${card.gradient} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
                             <card.icon className="w-5 h-5 text-white" />
                         </div>
                         <p className="text-2xl font-bold text-gray-900 dark:text-white">{card.value}</p>
@@ -408,10 +408,10 @@ function UsersTab({ users, loading, search, setSearch, roleFilter, setRoleFilter
                                         </td>
                                         <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.email}</td>
                                         <td className="px-5 py-4">
-                                            <span className={`inline - block px - 2.5 py - 1 rounded - lg text - xs font - medium capitalize ${u.role === 'school'
+                                            <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium capitalize ${u.role === 'school'
                                                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                                                     : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                                                } `}>{u.role}</span>
+                                                }`}>{u.role}</span>
                                         </td>
                                         <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{u.phone || "—"}</td>
                                         <td className="px-5 py-4 text-gray-600 dark:text-gray-400">{formatDate(u.createdAt)}</td>
@@ -633,7 +633,7 @@ function KYCTab({ users, loading, onVerify, actionLoading, formatDate }) {
                                                 <h4 className="font-semibold text-gray-900 dark:text-white">{u.name}</h4>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">{u.email} • {u.phone || 'No phone'}</p>
                                             </div>
-                                            <span className={`ml - auto px - 2.5 py - 1 rounded - lg text - xs font - medium ${KYC_STATUS_COLORS[u.idVerificationStatus] || KYC_STATUS_COLORS.pending} `}>
+                                            <span className={`ml-auto px-2.5 py-1 rounded-lg text-xs font-medium ${KYC_STATUS_COLORS[u.idVerificationStatus] || KYC_STATUS_COLORS.pending}`}>
                                                 {u.idVerificationStatus}
                                             </span>
                                         </div>
@@ -706,7 +706,7 @@ function KYCTab({ users, loading, onVerify, actionLoading, formatDate }) {
 /* ============ SHARED COMPONENTS ============ */
 function StatusBadge({ status }) {
     return (
-        <span className={`inline - block px - 2.5 py - 1 rounded - lg text - xs font - medium capitalize ${STATUS_COLORS[status] || STATUS_COLORS.pending} `}>
+        <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium capitalize ${STATUS_COLORS[status] || STATUS_COLORS.pending}`}>
             {status}
         </span>
     );
