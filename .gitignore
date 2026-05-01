@@ -33,3 +33,4 @@ backend/.env
 .gemini/
 .agents
 .%TEMP%
+%TEMP%/
