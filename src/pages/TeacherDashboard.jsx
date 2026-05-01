@@ -151,8 +151,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("bookings")}
                   className={`py - 4 border - b - 2 font - semibold transition ${activeTab === "bookings"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     } `}
                 >
                   My Bookings
@@ -161,8 +161,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("favorites")}
                   className={`py - 4 border - b - 2 font - medium transition ${activeTab === "favorites"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     } `}
                 >
                   Favorites
@@ -171,8 +171,8 @@ export default function TeacherDashboard() {
                   type="button"
                   onClick={() => setActiveTab("profile")}
                   className={`py - 4 border - b - 2 font - medium transition ${activeTab === "profile"
-                      ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     } `}
                 >
                   Profile
@@ -223,7 +223,7 @@ export default function TeacherDashboard() {
                       {bookings.map((booking) => (
                         <div key={booking._id || booking.id} className="bg-gray-50 dark:bg-neutral-900/50 rounded-2xl p-6 flex gap-6 hover:bg-gray-100 dark:hover:bg-neutral-900 transition">
                           <img
-                            src={booking.listing?.image || booking.image || "https://images.unsplash.com/photo-1588072432836-e10032774350?w=400"}
+                            src={booking.listing?.images?.[0] || booking.images?.[0] || "https://images.unsplash.com/photo-1588072432836-e10032774350?w=400"}
                             alt={booking.listing?.name || booking.spaceName}
                             className="w-32 h-32 rounded-xl object-cover"
                           />
@@ -242,10 +242,10 @@ export default function TeacherDashboard() {
                                 </p>
                               </div>
                               <span className={`px - 4 py - 2 rounded - full text - sm font - semibold ${booking.status === 'confirmed' || booking.status === 'Confirmed'
-                                  ? 'bg-green-100 text-green-700'
-                                  : booking.status === 'rejected' || booking.status === 'Rejected'
-                                    ? 'bg-red-100 text-red-700'
-                                    : 'bg-yellow-100 text-yellow-700'
+                                ? 'bg-green-100 text-green-700'
+                                : booking.status === 'rejected' || booking.status === 'Rejected'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-yellow-100 text-yellow-700'
                                 } `}>
                                 {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown'}
                               </span>
